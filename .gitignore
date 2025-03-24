@@ -23,3 +23,22 @@
 hs_err_pid*
 replay_pid*
 /.idea/
+
+# vscode
+.vscode/
+
+# Eclipse
+.metadata/
+.project
+.classpath
+.settings/
+
+# IntelliJ
+.idea/
+
+# Maven
+target/
+*.jar
+*.war
+*.nar
+*.ear
