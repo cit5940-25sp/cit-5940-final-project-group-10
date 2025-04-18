@@ -44,15 +44,17 @@ src/main/java/
 │   ├── Network.java   # Already implemented
 │   └── Node.java      # Already implemented
 ├── graph/             # New general-purpose graph package (reusable)
-│   ├── DirectedGraph.java     # Generic graph structure
-│   ├── Tree.java              # Generic tree implementation
-│   ├── TreeNode.java          # Base tree node interface
-│   ├── GameTreeNode.java      # Game-specific tree node
-│   └── traversal/             # Tree/graph traversal algorithms
-│       ├── BreadthFirst.java  # BFS traversal
-│       ├── DepthFirst.java    # DFS traversal
-│       ├── MiniMax.java       # Minimax algorithm with alpha-beta pruning
-│       ├── Expectimax.java    # Expectimax algorithm
+│   ├── core/
+│   │   ├── DirectedGraph.java  # Generic graph structure
+│   │   ├── Tree.java           # Generic tree implementation
+│   │   └── TreeNode.java       # Base tree node interface
+│   ├── traversal/
+│   │   ├── BreadthFirst.java   # BFS traversal
+│   │   └── DepthFirst.java     # DFS traversal
+│   └── search/               # Game tree search algorithms
+│       ├── GameTreeNode.java   # Game-specific tree node
+│       ├── MiniMax.java        # Minimax algorithm with alpha-beta pruning
+│       ├── Expectimax.java     # Expectimax algorithm
 │       └── MonteCarloTreeSearch.java # MCTS algorithm
 ├── othello/
 │   ├── App.java       # Already implemented
@@ -64,23 +66,17 @@ src/main/java/
 │   │   ├── OthelloGame.java    # To be expanded
 │   │   ├── Player.java         # To be expanded
 │   │   └── strategies/         # New package for AI strategies
-│   │       ├── Strategy.java           # Interface for all strategies
-│   │       ├── StrategyFactory.java    # Factory for creating strategies
-│   │       ├── evaluation/
-│   │       │   ├── BoardEvaluator.java # Interface for board evaluation
-│   │       │   ├── WeightedEvaluator.java   # Uses position weights
-│   │       │   └── MobilityEvaluator.java   # Evaluates based on move availability
-│   │       ├── minimax/
-│   │       │   └── MinimaxStrategy.java     # Uses graph.traversal.MiniMax
-│   │       ├── expectimax/
-│   │       │   └── ExpectimaxStrategy.java  # Uses graph.traversal.Expectimax
-│   │       ├── mcts/
-│   │       │   └── MCTSStrategy.java        # Uses graph.traversal.MonteCarloTreeSearch
-│   │       ├── custom/
-│   │       │   └── CustomStrategy.java      # Custom strategy implementation
-│   │       └── neural/                      # Integration point with neural network
-│   │           ├── NeuralStrategy.java      # Strategy using neural network
-│   │           └── BoardToInputMapper.java  # Converts game state to NN inputs
+│   │       ├── Strategy.java         # Interface for all strategies
+│   │       ├── StrategyFactory.java  # Factory for creating strategies
+│   │       ├── BoardEvaluator.java   # Interface for evaluation functions
+│   │       ├── WeightedEvaluator.java # Uses position weights
+│   │       ├── MobilityEvaluator.java # Based on move availability
+│   │       ├── MinimaxStrategy.java   # Implementation using minimax
+│   │       ├── ExpectimaxStrategy.java # Implementation using expectimax
+│   │       ├── MCTSStrategy.java      # Implementation using MCTS
+│   │       ├── CustomStrategy.java    # Custom implementation
+│   │       ├── NeuralStrategy.java    # Implementation using neural network
+│   │       └── BoardToInputMapper.java # Converts game state to NN inputs
 │   └── gui/
 │       ├── GameController.java # Already implemented
 │       └── GUISpace.java       # Already implemented
@@ -161,7 +157,7 @@ This phase is split into two parts: first creating a reusable graph package, the
 Create a new graph package to provide reusable tree and graph structures:
 
 ```java
-// Base node interface
+// In graph.core package - Base tree node interface
 public interface TreeNode<T> {
     T getData();
     List<? extends TreeNode<T>> getChildren();
@@ -170,7 +166,7 @@ public interface TreeNode<T> {
     boolean isLeaf();
 }
 
-// Game-specific tree node for search algorithms
+// In graph.search package - Game-specific tree node 
 public class GameTreeNode<T> implements TreeNode<T> {
     private T data;
     private GameTreeNode<T> parent;
@@ -185,7 +181,7 @@ public class GameTreeNode<T> implements TreeNode<T> {
     // Implementation of methods...
 }
 
-// Minimax implementation in the traversal package
+// In graph.search package - Minimax implementation
 public class MiniMax {
     public static <T> double search(GameTreeNode<T> node, int depth, 
                                    boolean maximizingPlayer, double alpha, double beta,
@@ -200,12 +196,12 @@ public class MiniMax {
 Create a common foundation for all strategies:
 
 ```java
-// Strategy interface
+// In othello.gamelogic.strategies package - Strategy interface
 public interface Strategy {
     BoardSpace getBestMove(OthelloGame game, Player currentPlayer, Player opponent);
 }
 
-// Factory for creating strategies
+// In othello.gamelogic.strategies package - Factory for creating strategies
 public class StrategyFactory {
     public static Strategy createStrategy(String strategyName) {
         return switch(strategyName) {
@@ -218,15 +214,33 @@ public class StrategyFactory {
     }
 }
 
-// Board evaluation interface
+// In othello.gamelogic.strategies package - Board evaluation interface
 public interface BoardEvaluator {
     double evaluate(BoardSpace[][] board, Player player, Player opponent);
 }
+
+// In othello.gamelogic.strategies package - Position-weighted evaluator
+public class WeightedEvaluator implements BoardEvaluator {
+    @Override
+    public double evaluate(BoardSpace[][] board, Player player, Player opponent) {
+        // Use position weights from Constants.BOARD_WEIGHTS
+        // Return score based on weighted positions
+    }
+}
+
+// In othello.gamelogic.strategies package - Mobility-based evaluator
+public class MobilityEvaluator implements BoardEvaluator {
+    @Override
+    public double evaluate(BoardSpace[][] board, Player player, Player opponent) {
+        // Evaluate based on number of available moves
+        // Return score based on mobility difference
+    }
+}
 ```
 
-#### 2.2 Computer Player Implementation
+#### 2.3 Computer Player Implementation
 
-Update the ComputerPlayer class to use strategies:
+Update the ComputerPlayer class to use the StrategyFactory and Strategy interface:
 
 ```java
 public class ComputerPlayer extends Player {
@@ -242,9 +256,9 @@ public class ComputerPlayer extends Player {
 }
 ```
 
-#### 2.3 Strategy Implementations Using Graph Package
+#### 2.4 Strategy Implementations Using Graph Package
 
-Each strategy will use the graph package's traversal algorithms:
+Each strategy will use the graph package's search algorithms:
 
 ##### Minimax Strategy Implementation
 
@@ -269,7 +283,7 @@ public class MinimaxStrategy implements Strategy {
         GameTreeNode<GameState> rootNode = new GameTreeNode<>(initialState);
         
         // Use graph package's MiniMax implementation
-        double bestScore = graph.traversal.MiniMax.search(
+        double bestScore = graph.search.MiniMax.search(
             rootNode, 
             maxDepth, 
             true, // maximizing player
@@ -309,7 +323,7 @@ public class ExpectimaxStrategy implements Strategy {
         GameTreeNode<GameState> rootNode = new GameTreeNode<>(initialState);
         
         // Use graph package's Expectimax implementation
-        double bestScore = graph.traversal.Expectimax.search(
+        double bestScore = graph.search.Expectimax.search(
             rootNode, 
             maxDepth, 
             true, // maximizing player
@@ -347,7 +361,7 @@ public class MCTSStrategy implements Strategy {
         GameTreeNode<GameState> rootNode = new GameTreeNode<>(initialState);
         
         // Use graph package's MCTS implementation
-        graph.traversal.MonteCarloTreeSearch.search(
+        graph.search.MonteCarloTreeSearch.search(
             rootNode,
             simulationCount,
             explorationParameter,
@@ -412,7 +426,7 @@ public class CustomStrategy implements Strategy {
 }
 ```
 
-#### 2.7 Computer Decision Integration
+#### 2.5 Computer Decision Integration
 
 - Implement `computerDecision(ComputerPlayer computer)` in OthelloGame
   - Get available moves for the computer player
