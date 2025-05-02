@@ -51,6 +51,11 @@ public class OthelloGame {
                 board[i][j] = new BoardSpace(i, j, BoardSpace.SpaceType.EMPTY);
             }
         }
+
+        board[3][3].setType(BoardSpace.SpaceType.WHITE);
+        board[4][3].setType(BoardSpace.SpaceType.BLACK);
+        board[3][4].setType(BoardSpace.SpaceType.BLACK);
+        board[4][4].setType(BoardSpace.SpaceType.WHITE);
     }
 
     /**
@@ -64,7 +69,15 @@ public class OthelloGame {
      * @param x the x-coordinate of the space to claim
      * @param y the y-coordinate of the space to claim
      */
-    public void takeSpace(Player actingPlayer, Player opponent, int x, int y) {}
+    public void takeSpace(Player actingPlayer, Player opponent, int x, int y) {
+        if (board[x][y].getType() != actingPlayer.getColor()) {
+            // update board state
+            board[x][y].setType(actingPlayer.getColor());
+            // take from opponent, give to player
+            opponent.getPlayerOwnedSpacesSpaces().remove(board[x][y]);
+            actingPlayer.getPlayerOwnedSpacesSpaces().add(board[x][y]);
+        }
+    }
 
     /**
      * PART 1
@@ -76,7 +89,16 @@ public class OthelloGame {
      * @param availableMoves map of the available moves, that maps destination to list of origins
      * @param selectedDestination the specific destination that a HUMAN player selected
      */
-    public void takeSpaces(Player actingPlayer, Player opponent, Map<BoardSpace, List<BoardSpace>> availableMoves, BoardSpace selectedDestination) {}
+    public void takeSpaces(Player actingPlayer, Player opponent, Map<BoardSpace, List<BoardSpace>> availableMoves, BoardSpace selectedDestination) {
+        // cardinals
+        int[] dx = {-1, -1, -1, 0, 0, 1, 1, 1};
+        int[] dy = {-1,  0,  1,-1, 1,-1, 0, 1};
+
+        List<BoardSpace> origins = availableMoves.get(selectedDestination);
+        for (BoardSpace b : origins) {
+            takeSpace(actingPlayer, opponent, b.getX(), b.getY());
+        }
+    }
 
     /**
      * PART 2
