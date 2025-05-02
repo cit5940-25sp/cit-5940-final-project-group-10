@@ -29,94 +29,56 @@ public abstract class Player {
      * @param board the board that will be evaluated for possible moves for this player
      * @return a map with a destination BoardSpace mapped to a List of origin BoardSpaces.
      */
-    // IDEA 1 : Use DFS to find the empty spaces adjacent of the contiguous pieces
-    private void edgeTrace(int row, int col, BoardSpace[][] board, boolean[][] visited) {
-        // base case, move is outside grid
-        if (row >= board.length || row < 0 || col < 0 || col >= board[0].length) {
-            return;
-        }
-
-        // base case, already visited
-        if (visited[row][col]) {
-            return;
-        }
-
-        visited[row][col] = true;
-
-        // found empty space, check if it is a valid move
-        if (board[row][col].getType() == BoardSpace.SpaceType.EMPTY) {
-            validCheck(row, col, board);
-        }
-
-        // traverse right and left
-        edgeTrace(row - 1, col, board, visited);
-        edgeTrace(row + 1, col, board, visited);
-
-        //traverse up and down
-        edgeTrace(row, col + 1, board, visited);
-        edgeTrace(row, col - 1, board, visited);
-    }
-
-    private void validCheck(int row, int col, BoardSpace[][] board) {
-        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-        for (int[] direction : directions) {
-            // if any of the adjacent four cells to an empty is the other player's color
-            // begin looking for a cell of player's own color in the spaces along the same axis
-            int rowCheck = row + direction[0];
-            int colCheck = col + direction[1];
-            if (rowCheck >= board.length || rowCheck < 0 || colCheck < 0 || colCheck >= board[0].length) {
-                continue;
-            }
-
-            BoardSpace nextSpace = board[row][col];
-            BoardSpace.SpaceType nextType = nextSpace.getType();
-            while (nextType != BoardSpace.SpaceType.EMPTY && nextType != color) {
-                // while the space is the opposing players color, check along the axis
-                rowCheck += direction[0];
-                colCheck += direction[1];
-
-            }
-        }
-    }
 
     public Map<BoardSpace, List<BoardSpace>> getAvailableMoves(BoardSpace[][] board) {
-//        int[][] directions = {{0,1}, {0,-1}, {1,0}, {-1,0}};
-//
-//        Map<BoardSpace, List<BoardSpace>> validMoves = new HashMap<>();
-//        Queue<BoardSpace> sourcePieces = new ArrayDeque<>();
-//
-//        // get player owned spaces
-//        for (BoardSpace[] space_row : board) {
-//            for (BoardSpace space : space_row) {
-//                if (space.getType() == color) {
-//                    // populate list of owned spaces and BFS queue
-//                    playerOwnedSpaces.add(space);
-//                    sourcePieces.add(space);
-//                }
-//            }
-//        }
-//        // BFS using player spaces
-//        boolean[][] visited = new boolean[board.length][board[0].length];
-//        while (!sourcePieces.isEmpty()) {
-//            BoardSpace begin = sourcePieces.poll();
-//            for (int[] direction : directions) {
-//                int row = begin.getX() + direction[0];
-//                int col = begin.getY() + direction[1];
-//                BoardSpace next;
-//
-//                // if the piece is
-//                if (row >= 0 && row < board.length && col >= 0 && col < board.length
-//                        && !visited[row][col]
-//                        && board[row][col]) {
-//                    visited[row][col] = true;
-//                    }
-//                }
-//
-//
-//
-//            }
-//        }
-        return null;
+        // init, get the player color, uses ternary (?) to define the other player
+        Map<BoardSpace, List<BoardSpace>> moves = new HashMap<>();
+        BoardSpace.SpaceType myPlayer = getColor();
+        BoardSpace.SpaceType opponent = (myPlayer == BoardSpace.SpaceType.BLACK)
+                ? BoardSpace.SpaceType.WHITE
+                : BoardSpace.SpaceType.BLACK;
+        int rows = board.length;
+        int cols = board[0].length;
+        // sequence of xy coordinate dimensions to travel along
+        int[] dx = {-1, -1, -1, 0, 0, 1, 1, 1};
+        int[] dy = {-1,  0,  1,-1, 1,-1, 0, 1};
+        // go row by row
+        for (int x = 0; x < rows; x++) {
+            for (int y = 0; y < cols; y++) {
+                // skip non-empty spaces, not valid moves
+                if (board[x][y].getType() != BoardSpace.SpaceType.EMPTY) {
+                    continue;
+                }
+
+                List<BoardSpace> origins = new ArrayList<>();
+                // check all possible spaces for opponent's color
+                for (int direction = 0; direction < 8; direction++) {
+                    int i = x + dx[direction];
+                    int j = y + dy[direction];
+                    boolean hasOpponent = false;
+                    // if we find an opponents color, keep traversing along that dimension dx,dy
+                    while (i >= 0 && i < rows && j >= 0 && j < cols
+                            && board[i][j].getType() == opponent) {
+                        hasOpponent = true;
+                        i += dx[direction];
+                        j += dy[direction];
+                    }
+                    // if we encountered some amount of opponent pieces and then one of our own
+                    if (hasOpponent
+                            && i >= 0 && i < rows && j >= 0 && j < cols
+                            && board[i][j].getType() == myPlayer) {
+                        // add this player piece as an origin for a move
+                        origins.add(board[i][j]);
+                    }
+                }
+
+                // if we found any possible origins for the move, it is valid
+                if (!origins.isEmpty()) {
+                    moves.put(board[x][y], origins);
+                }
+            }
+        }
+        return moves;
     }
 
 }
