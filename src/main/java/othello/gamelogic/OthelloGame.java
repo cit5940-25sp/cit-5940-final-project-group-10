@@ -90,13 +90,15 @@ public class OthelloGame {
      * @param selectedDestination the specific destination that a HUMAN player selected
      */
     public void takeSpaces(Player actingPlayer, Player opponent, Map<BoardSpace, List<BoardSpace>> availableMoves, BoardSpace selectedDestination) {
-        // cardinals
+        // cardinal directions
         int[] dx = {-1, -1, -1, 0, 0, 1, 1, 1};
         int[] dy = {-1,  0,  1,-1, 1,-1, 0, 1};
 
         List<BoardSpace> origins = availableMoves.get(selectedDestination);
-        for (BoardSpace b : origins) {
-            takeSpace(actingPlayer, opponent, b.getX(), b.getY());
+
+        for (int direction = 0; direction < 8; direction++) {
+            int i = selectedDestination.getX() + dx[direction];
+            int j = selectedDestination.getY() + dy[direction];
         }
     }
 
