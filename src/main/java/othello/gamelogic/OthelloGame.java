@@ -111,12 +111,12 @@ public class OthelloGame {
 
 
             for (int direction = 0; direction < 8; direction++) {
-                // look for direction with the same cardinality as the different between dest and origin
+                // look for direction with the same cardinality as the difference between dest and origin
                 if (dx[direction] == Integer.signum(xdist) && dy[direction] == Integer.signum(ydist)) {
                     int i = selectedDestination.getX();
                     int j = selectedDestination.getY();
 
-                    // fill spaces one found
+                    // fill spaces once found
                     while ((i != origin.getX() || j != origin.getY())) {
                        if (i != origin.getX()) {
                            i += dx[direction];
