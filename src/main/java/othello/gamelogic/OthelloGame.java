@@ -58,6 +58,14 @@ public class OthelloGame {
         board[4][4].setType(BoardSpace.SpaceType.WHITE);
     }
 
+    // useful for less repetitive bounds checking booleans
+    public static boolean inBounds(int row, int col) {
+        return (
+                row >= 0 && row < GAME_BOARD_SIZE &&
+                        col >= 0 && col < GAME_BOARD_SIZE
+        );
+    }
+
     /**
      * PART 1
      * TODO: Implement this method
@@ -96,9 +104,32 @@ public class OthelloGame {
 
         List<BoardSpace> origins = availableMoves.get(selectedDestination);
 
-        for (int direction = 0; direction < 8; direction++) {
-            int i = selectedDestination.getX() + dx[direction];
-            int j = selectedDestination.getY() + dy[direction];
+        // check which direction the origin is coming from
+        for (BoardSpace origin : origins) {
+            int xdist = origin.getX() - selectedDestination.getX();
+            int ydist = origin.getY() - selectedDestination.getY();
+
+
+            for (int direction = 0; direction < 8; direction++) {
+                // look for direction with the same cardinality as the different between dest and origin
+                if (dx[direction] == Integer.signum(xdist) && dy[direction] == Integer.signum(ydist)) {
+                    int i = selectedDestination.getX();
+                    int j = selectedDestination.getY();
+
+                    // fill spaces one found
+                    while ((i != origin.getX() || j != origin.getY())) {
+                       if (i != origin.getX()) {
+                           i += dx[direction];
+                       }
+                       if (j != origin.getY()) {
+                           j += dy[direction];
+                       }
+                        if (inBounds(i,j)) {
+                            takeSpace(actingPlayer, opponent, i, j);
+                        }
+                    }
+                }
+            }
         }
     }
 
