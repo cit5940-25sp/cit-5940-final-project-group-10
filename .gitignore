@@ -42,3 +42,9 @@ target/
 *.war
 *.nar
 *.ear
+
+# DS_Store
+.DS_store
+
+# Iml
+*.iml
