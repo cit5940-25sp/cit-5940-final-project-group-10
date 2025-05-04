@@ -57,7 +57,7 @@ public abstract class Player {
                     int j = y + dy[direction];
                     boolean hasOpponent = false;
                     // if we find an opponents color, keep traversing along that dimension dx,dy
-                    while (i >= 0 && i < rows && j >= 0 && j < cols
+                    while (OthelloGame.inBounds(i,j)
                             && board[i][j].getType() == opponent) {
                         hasOpponent = true;
                         i += dx[direction];
@@ -65,7 +65,7 @@ public abstract class Player {
                     }
                     // if we encountered some amount of opponent pieces and then one of our own
                     if (hasOpponent
-                            && i >= 0 && i < rows && j >= 0 && j < cols
+                            && OthelloGame.inBounds(i,j)
                             && board[i][j].getType() == myPlayer) {
                         // add this player piece as an origin for a move
                         origins.add(board[i][j]);
