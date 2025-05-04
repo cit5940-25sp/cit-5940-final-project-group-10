@@ -88,11 +88,11 @@ public class Node {
     }
 
     public List<Edge> getOutgoingConnections() {
-        return List.copyOf(this.outgoingConnections);
+        return this.outgoingConnections;
     }
 
     public List<Edge> getIncomingConnections() {
-        return List.copyOf(this.incomingConnections);
+        return this.incomingConnections;
     }
     public DoubleUnaryOperator getActivationFunction() {
         return this.activationFunction;
