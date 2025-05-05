@@ -1,16 +1,27 @@
 package othello.gamelogic;
 
+import othello.gamelogic.strategies.Strategy;
+import othello.gamelogic.strategies.StrategyFactory;
+
 /**
  * Represents a computer player that will make decisions autonomously during their turns.
  * Employs a specific computer strategy passed in through program arguments.
  */
-public class ComputerPlayer extends Player{
+public class ComputerPlayer extends Player {
+    private final Strategy strategy;
+    
     public ComputerPlayer(String strategyName) {
-        // PART 2
-        // TODO: Use the strategyName input to create a specific strategy class for this computer
-        // This input should match the ones specified in App.java!
+        // Use the strategyName input to create a specific strategy
+        this.strategy = StrategyFactory.createStrategy(strategyName);
     }
-
-    // PART 2
-    // TODO: implement a method that returns a BoardSpace that a strategy selects
+    
+    /**
+     * Gets the best move for this computer player.
+     * @param game The current game
+     * @param opponent The opposing player
+     * @return The board space representing the best move
+     */
+    public BoardSpace getBestMove(OthelloGame game, Player opponent) {
+        return strategy.getBestMove(game, this, opponent);
+    }
 }

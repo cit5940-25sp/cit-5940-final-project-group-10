@@ -62,6 +62,7 @@ src/main/java/
 │   ├── gamelogic/
 │   │   ├── BoardSpace.java     # Already implemented
 │   │   ├── ComputerPlayer.java # To be expanded
+│   │   ├── GameState.java      # Game state representation for AI
 │   │   ├── HumanPlayer.java    # Already implemented
 │   │   ├── OthelloGame.java    # To be expanded
 │   │   ├── Player.java         # To be expanded
@@ -74,8 +75,8 @@ src/main/java/
 │   │       ├── MinimaxStrategy.java   # Implementation using minimax
 │   │       ├── ExpectimaxStrategy.java # Implementation using expectimax
 │   │       ├── MCTSStrategy.java      # Implementation using MCTS
-│   │       ├── CustomStrategy.java    # Custom implementation
-│   │       ├── NeuralStrategy.java    # Implementation using neural network
+│   │       ├── AdaptiveStrategy.java  # Phase-based adaptive implementation
+│   │       ├── NeuralStrategy.java    # Custom implementation using neural network
 │   │       └── BoardToInputMapper.java # Converts game state to NN inputs
 │   └── gui/
 │       ├── GameController.java # Already implemented
@@ -384,12 +385,12 @@ public class MCTSStrategy implements Strategy {
 }
 ```
 
-##### Custom Strategy Implementation
+##### Adaptive Strategy Implementation
 
-Create a custom strategy that could combine multiple approaches or use the neural network:
+Create an adaptive strategy that combines multiple approaches based on game phase:
 
 ```java
-public class CustomStrategy implements Strategy {
+public class AdaptiveStrategy implements Strategy {
     private final BoardEvaluator evaluator;
     private final Strategy earlygameStrategy;
     private final Strategy midgameStrategy;
@@ -397,7 +398,7 @@ public class CustomStrategy implements Strategy {
     private final int midgameThreshold = 20; // Board spaces filled
     private final int endgameThreshold = 50; // Board spaces filled
     
-    public CustomStrategy() {
+    public AdaptiveStrategy() {
         this.evaluator = new MobilityEvaluator(); // Different evaluator
         
         // Initialize different strategies for different game phases
@@ -426,6 +427,58 @@ public class CustomStrategy implements Strategy {
 }
 ```
 
+##### Neural Network Strategy Implementation (Custom Strategy)
+
+Create a custom strategy that leverages the neural network framework for board evaluation:
+
+```java
+public class NeuralStrategy implements Strategy {
+    private final Network network;
+    
+    public NeuralStrategy(Network network) {
+        this.network = network;
+    }
+    
+    @Override
+    public BoardSpace getBestMove(OthelloGame game, Player currentPlayer, Player opponent) {
+        // Get available moves
+        Map<BoardSpace, List<BoardSpace>> availableMoves = game.getAvailableMoves(currentPlayer);
+        
+        // Use neural network to evaluate each move
+        BoardSpace bestMove = null;
+        double bestScore = Double.NEGATIVE_INFINITY;
+        
+        for (BoardSpace move : availableMoves.keySet()) {
+            // Create a temporary game state and apply the move
+            GameState state = new GameState(game.getBoard(), currentPlayer, opponent);
+            GameState nextState = state.applyMove(move);
+            
+            // Evaluate using neural network
+            double score = evaluateWithNetwork(nextState);
+            
+            // Keep track of the best move
+            if (score > bestScore) {
+                bestScore = score;
+                bestMove = move;
+            }
+        }
+        
+        return bestMove;
+    }
+    
+    private double evaluateWithNetwork(GameState state) {
+        // Convert board to neural network input
+        double[] input = BoardToInputMapper.mapToInput(state.getBoard(), state.getCurrentPlayer());
+        
+        // Feed forward through the network
+        double[] output = network.feedForward(input);
+        
+        // Return the evaluation score
+        return output[0];
+    }
+}
+```
+
 #### 2.5 Computer Decision Integration
 
 - Implement `computerDecision(ComputerPlayer computer)` in OthelloGame
@@ -447,11 +500,11 @@ public BoardSpace computerDecision(ComputerPlayer computer) {
 
 ### Phase 3: Neural Network Integration
 
-This phase focuses on integrating the neural network framework with the Othello game.
+This phase focuses on integrating the neural network framework with the Othello game. Our custom strategy will be the NeuralStrategy, which leverages the neural network for board evaluation.
 
-#### 3.1 Neural Network Strategy
+#### 3.1 Neural Network Strategy (Custom Strategy)
 
-Create a strategy that uses the neural network for board evaluation:
+Enhance the NeuralStrategy to use the neural network for board evaluation:
 
 ```java
 public class NeuralStrategy implements Strategy {
@@ -463,13 +516,51 @@ public class NeuralStrategy implements Strategy {
     
     @Override
     public BoardSpace getBestMove(OthelloGame game, Player currentPlayer, Player opponent) {
-        // Implementation details...
+        // Get available moves
+        Map<BoardSpace, List<BoardSpace>> availableMoves = game.getAvailableMoves(currentPlayer);
+        
+        if (availableMoves.isEmpty()) {
+            return null; // No valid moves
+        }
+        
+        // Use minimax-like search but with neural network evaluation
+        BoardSpace bestMove = null;
+        double bestScore = Double.NEGATIVE_INFINITY;
+        
+        for (BoardSpace move : availableMoves.keySet()) {
+            // Create a temporary game state
+            GameState state = new GameState(game.getBoard(), currentPlayer, opponent);
+            
+            // Apply the move
+            GameState nextState = state.applyMove(move);
+            
+            // Evaluate using neural network
+            double score = evaluateWithNetwork(nextState);
+            
+            // Keep track of the best move
+            if (score > bestScore) {
+                bestScore = score;
+                bestMove = move;
+            }
+        }
+        
+        return bestMove;
     }
     
-    private double evaluateWithNetwork(BoardSpace[][] board, Player player, Player opponent) {
-        // Convert board to network input
-        // Feed forward through the network
+    private double evaluateWithNetwork(GameState state) {
+        // Convert board state to neural network input
+        double[] input = BoardToInputMapper.mapToInput(state.getBoard(), state.getCurrentPlayer());
+        
+        // Feed forward through the neural network
+        double[] output = network.feedForward(input);
+        
         // Return the evaluation score
+        return output[0];
+    }
+    
+    public void train(int iterations) {
+        // Implement self-play training for the neural network
+        // This would be executed to improve the network over time
     }
 }
 ```
