@@ -137,7 +137,11 @@ public class MCTSStrategy implements Strategy {
         boolean maximizingPlayerWon = (isMaximizingPlayerOne && playerOneWon) || 
             (!isMaximizingPlayerOne && !playerOneWon);
         
-        return maximizingPlayerWon ? 1.0 : 0.0;
+        if (maximizingPlayerWon) {
+            return 1.0;
+        } else {
+            return 0.0;
+        }
     }
     
     /**
