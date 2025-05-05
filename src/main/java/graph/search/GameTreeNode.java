@@ -36,6 +36,14 @@ public class GameTreeNode<T> implements TreeNode<T> {
         return data;
     }
     
+    /**
+     * Sets the data for this node
+     * @param data The data to set
+     */
+    public void setData(T data) {
+        this.data = data;
+    }
+    
     @Override
     public List<GameTreeNode<T>> getChildren() {
         return children;
