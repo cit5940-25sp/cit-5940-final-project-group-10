@@ -50,10 +50,23 @@ public class MinimaxStrategy implements Strategy {
             true, // maximizing player
             Double.NEGATIVE_INFINITY,
             Double.POSITIVE_INFINITY,
-            (state, isMax) -> evaluator.evaluate(
-                ((GameState)state).getBoard(), 
-                isMax ? currentPlayer : opponent,
-                isMax ? opponent : currentPlayer)
+            (state, isMax) -> {
+                Player evalPlayer;
+                Player evalOpponent;
+                
+                if (isMax) {
+                    evalPlayer = currentPlayer;
+                    evalOpponent = opponent;
+                } else {
+                    evalPlayer = opponent;
+                    evalOpponent = currentPlayer;
+                }
+                
+                return evaluator.evaluate(
+                    ((GameState)state).getBoard(), 
+                    evalPlayer,
+                    evalOpponent);
+            }
         );
         
         // Find child with the best score
