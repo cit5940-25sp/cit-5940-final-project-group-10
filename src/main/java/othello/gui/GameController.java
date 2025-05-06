@@ -129,8 +129,8 @@ public class GameController  {
         turnCircle.setFill(player.getColor().fill());
         turnLabel.setText(
                 player.getColor() + "'s Turn\n" + humanOrCom + "Score: \n" +
-                        og.getPlayerOne().getColor() + ": " + og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + " - " +
-                        og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size());
+                        og.getPlayerOne().getColor() + ": " + og.getPlayerOne().getPlayerOwnedSpaces().size() + " - " +
+                        og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().getPlayerOwnedSpaces().size());
     }
 
     /**
@@ -140,8 +140,8 @@ public class GameController  {
     protected void skipTurnText(Player player) {
         turnLabel.setText(
                 "Skipped " + player.getColor() + " due to no moves available! " + otherPlayer(player).getColor() + "'s Turn\n" +
-                        og.getPlayerOne().getColor() + ": " + og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + " - " +
-                        og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size());
+                        og.getPlayerOne().getColor() + ": " + og.getPlayerOne().getPlayerOwnedSpaces().size() + " - " +
+                        og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().getPlayerOwnedSpaces().size());
     }
 
     /**
@@ -172,12 +172,12 @@ public class GameController  {
         Map<BoardSpace, List<BoardSpace>> availableMoves = og.getAvailableMoves(player);
         if (availableMoves == null) {
             turnLabel.setText("Null move found for \n" + player.getColor() + "! \n Please implement \ngetAvailableMoves()!");
-        } else if (availableMoves.size() == 0) {
-            if (og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size() != 64 && skippedTurns != 2) {
+        } else if (availableMoves.isEmpty()) {
+            if (og.getPlayerOne().getPlayerOwnedSpaces().size() + og.getPlayerTwo().getPlayerOwnedSpaces().size() != 64 && skippedTurns != 2) {
                 skipTurnText(player);
                 takeTurn(otherPlayer(player));
                 skippedTurns++;
-            } else if (skippedTurns == 2 || og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size() == 64){
+            } else if (skippedTurns == 2 || og.getPlayerOne().getPlayerOwnedSpaces().size() + og.getPlayerTwo().getPlayerOwnedSpaces().size() == 64){
                 gameOver();
             }
 
@@ -212,12 +212,12 @@ public class GameController  {
         Map<BoardSpace, List<BoardSpace>> availableMoves = og.getAvailableMoves(player);
         if (availableMoves == null) {
             turnLabel.setText("Null move found for \n" + player.getColor() + "! \n Please implement \ncomputerDecision()!");
-        } else if (availableMoves.size() == 0) {
-            if (og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size() != 64 && skippedTurns != 2) {
+        } else if (availableMoves.isEmpty()) {
+            if (og.getPlayerOne().getPlayerOwnedSpaces().size() + og.getPlayerTwo().getPlayerOwnedSpaces().size() != 64 && skippedTurns != 2) {
                 skipTurnText(player);
                 takeTurn(otherPlayer(player));
                 skippedTurns++;
-            } else if (skippedTurns == 2 || og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size() == 64){
+            } else if (skippedTurns == 2 || og.getPlayerOne().getPlayerOwnedSpaces().size() + og.getPlayerTwo().getPlayerOwnedSpaces().size() == 64){
                 gameOver();
             }
 
@@ -338,23 +338,23 @@ public class GameController  {
     protected void gameOver() {
         boolean p1Victory = false;
         boolean tie = false;
-        if (og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() > og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size()) {
+        if (og.getPlayerOne().getPlayerOwnedSpaces().size() > og.getPlayerTwo().getPlayerOwnedSpaces().size()) {
             p1Victory = true;
-        } else if (og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() == og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size()) {
+        } else if (og.getPlayerOne().getPlayerOwnedSpaces().size() == og.getPlayerTwo().getPlayerOwnedSpaces().size()) {
             tie = true;
         }
         if (tie) {
             turnLabel.setText("GAME OVER! Game Tied with scores: \n " +
-                    og.getPlayerOne().getColor() + ": " + og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + " - " +
-                    og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size());
+                    og.getPlayerOne().getColor() + ": " + og.getPlayerOne().getPlayerOwnedSpaces().size() + " - " +
+                    og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().getPlayerOwnedSpaces().size());
         } else if (p1Victory) {
             turnLabel.setText("GAME OVER! BLACK wins with scores: \n " +
-                    og.getPlayerOne().getColor() + ": " + og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + " - " +
-                    og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size());
+                    og.getPlayerOne().getColor() + ": " + og.getPlayerOne().getPlayerOwnedSpaces().size() + " - " +
+                    og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().getPlayerOwnedSpaces().size());
         } else {
             turnLabel.setText("GAME OVER! WHITE wins with scores: \n " +
-                    og.getPlayerOne().getColor() + ": " + og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + " - " +
-                    og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size());
+                    og.getPlayerOne().getColor() + ": " + og.getPlayerOne().getPlayerOwnedSpaces().size() + " - " +
+                    og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().getPlayerOwnedSpaces().size());
         }
     }
 }

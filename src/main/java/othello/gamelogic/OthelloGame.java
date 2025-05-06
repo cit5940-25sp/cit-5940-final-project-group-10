@@ -51,11 +51,17 @@ public class OthelloGame {
                 board[i][j] = new BoardSpace(i, j, BoardSpace.SpaceType.EMPTY);
             }
         }
-
-        board[3][3].setType(BoardSpace.SpaceType.WHITE);
+        //p1 is black
         board[4][3].setType(BoardSpace.SpaceType.BLACK);
+        playerOne.getPlayerOwnedSpaces().add(board[4][3]);
         board[3][4].setType(BoardSpace.SpaceType.BLACK);
+        playerOne.getPlayerOwnedSpaces().add(board[3][4]);
+
+        //p2 is while
+        board[3][3].setType(BoardSpace.SpaceType.WHITE);
+        playerTwo.getPlayerOwnedSpaces().add(board[3][3]);
         board[4][4].setType(BoardSpace.SpaceType.WHITE);
+        playerTwo.getPlayerOwnedSpaces().add(board[4][4]);
     }
 
     // useful for less repetitive bounds checking booleans
@@ -78,12 +84,17 @@ public class OthelloGame {
      * @param y the y-coordinate of the space to claim
      */
     public void takeSpace(Player actingPlayer, Player opponent, int x, int y) {
-        if (board[x][y].getType() != actingPlayer.getColor()) {
+        BoardSpace space = board[x][y];
+        if (!actingPlayer.getPlayerOwnedSpaces().contains(board[x][y])) {
             // update board state
-            board[x][y].setType(actingPlayer.getColor());
             // take from opponent, give to player
-            opponent.getPlayerOwnedSpacesSpaces().remove(board[x][y]);
-            actingPlayer.getPlayerOwnedSpacesSpaces().add(board[x][y]);
+            opponent.getPlayerOwnedSpaces().remove(space);
+
+            if (!actingPlayer.getPlayerOwnedSpaces().contains(space)) {
+                actingPlayer.getPlayerOwnedSpaces().add(board[x][y]);
+            }
+
+            space.setType(actingPlayer.getColor());
         }
     }
 
@@ -118,15 +129,15 @@ public class OthelloGame {
 
                     // fill spaces once found
                     while ((i != origin.getX() || j != origin.getY())) {
+                        if (inBounds(i,j)) {
+                            takeSpace(actingPlayer, opponent, i, j);
+                        }
                        if (i != origin.getX()) {
                            i += dx[direction];
                        }
                        if (j != origin.getY()) {
                            j += dy[direction];
                        }
-                        if (inBounds(i,j)) {
-                            takeSpace(actingPlayer, opponent, i, j);
-                        }
                     }
                 }
             }
@@ -142,7 +153,12 @@ public class OthelloGame {
      * @return the BoardSpace that was decided upon
      */
     public BoardSpace computerDecision(ComputerPlayer computer) {
-        return null;
-    }
+        BoardSpace.SpaceType computerColor = computer.getColor();
+        if (playerOne.getColor() == computerColor) {
+            return computer.getBestMove(this, playerTwo);
+        } else {
+            return computer.getBestMove(this, playerOne);
+        }
+     }
 
 }
