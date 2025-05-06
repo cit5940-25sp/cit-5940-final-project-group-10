@@ -9,6 +9,7 @@ import othello.gamelogic.strategies.StrategyFactory;
  */
 public class ComputerPlayer extends Player {
     private final Strategy strategy;
+
     
     public ComputerPlayer(String strategyName) {
         // Use the strategyName input to create a specific strategy

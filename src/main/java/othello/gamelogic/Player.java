@@ -8,7 +8,7 @@ import java.util.*;
  */
 public abstract class Player {
     private final List<BoardSpace> playerOwnedSpaces = new ArrayList<>();
-    public List<BoardSpace> getPlayerOwnedSpacesSpaces() {
+    public List<BoardSpace> getPlayerOwnedSpaces() {
         return playerOwnedSpaces;
     }
 

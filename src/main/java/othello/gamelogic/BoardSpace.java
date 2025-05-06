@@ -2,6 +2,8 @@ package othello.gamelogic;
 
 import javafx.scene.paint.Color;
 
+import java.util.Objects;
+
 /**
  * Represents a logical space on the Othello Board.
  * Keeps track of coordinates and the type of the current space.
@@ -18,11 +20,24 @@ public class BoardSpace {
         setType(type);
     }
 
-    // Copy constructor
     public BoardSpace(BoardSpace other) {
         this.x = other.x;
         this.y = other.y;
         this.type = other.type;
+    }
+
+    // auto generated equals and hash
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BoardSpace that = (BoardSpace) o;
+        return x == that.x && y == that.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 
     /**
