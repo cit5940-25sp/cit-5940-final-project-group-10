@@ -76,7 +76,7 @@ public class GameState {
         
         // Find the move in the available moves
         BoardSpace correspondingMove = null;
-        for (BoardSpace destination : availableMoves.keySet()) { // this is broken???
+        for (BoardSpace destination : availableMoves.keySet()) {
             if (destination.getX() == move.getX() && destination.getY() == move.getY()) {
                 correspondingMove = destination;
                 break;
