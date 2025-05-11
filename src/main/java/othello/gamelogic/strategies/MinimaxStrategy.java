@@ -63,7 +63,7 @@ public class MinimaxStrategy implements Strategy {
                 }
                 
                 return evaluator.evaluate(
-                    ((GameState)state ).getBoard(),
+                    ((GameState)state).getBoard(), 
                     evalPlayer,
                     evalOpponent);
             }

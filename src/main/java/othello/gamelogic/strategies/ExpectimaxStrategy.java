@@ -5,6 +5,7 @@ import graph.search.Expectimax;
 import othello.gamelogic.*;
 import java.util.Map;
 import java.util.List;
+import java.util.function.BiFunction;
 
 /**
  * Implements a strategy using the Expectimax algorithm.
@@ -48,23 +49,7 @@ public class ExpectimaxStrategy implements Strategy {
             rootNode, 
             maxDepth, 
             true, // maximizing player
-            (state, isMax) -> {
-                Player evalPlayer;
-                Player evalOpponent;
-                
-                if (isMax) {
-                    evalPlayer = currentPlayer;
-                    evalOpponent = opponent;
-                } else {
-                    evalPlayer = opponent;
-                    evalOpponent = currentPlayer;
-                }
-                
-                return evaluator.evaluate(
-                    ((GameState)state).getBoard(), 
-                    evalPlayer,
-                    evalOpponent);
-            }
+            this.createEvaluator(currentPlayer, opponent)
         );
         
         // Find child with the best score
@@ -85,6 +70,25 @@ public class ExpectimaxStrategy implements Strategy {
         public BoardSpace getMove() {
             return move;
         }
+    }
+    
+    /**
+     * Creates a board evaluator function for the expectimax search
+     * @param currentPlayer The current player
+     * @param opponent The opponent player
+     * @return A function that evaluates board states
+     */
+    private BiFunction<GameState, Boolean, Double> createEvaluator(Player currentPlayer, Player opponent) {
+        return new BiFunction<GameState, Boolean, Double>() {
+            @Override
+            public Double apply(GameState gameState, Boolean isMax) {
+                if (isMax) {
+                    return evaluator.evaluate(gameState.getBoard(), currentPlayer, opponent);
+                } else {
+                    return evaluator.evaluate(gameState.getBoard(), opponent, currentPlayer);
+                }
+            }
+        };
     }
     
     /**

@@ -72,13 +72,15 @@ public class GameState {
         GameState newState = new GameState(board, currentPlayer, opponent);
         
         // Get available moves for this state
-        Map<BoardSpace, List<BoardSpace>> availableMoves = currentPlayer.getAvailableMoves(board);
+        Map<BoardSpace, List<BoardSpace>> availableMoves = currentPlayer.getAvailableMoves(newState.board);
         
         // Find the move in the available moves
         BoardSpace correspondingMove = null;
+        List<BoardSpace> flippablePieces = null;
         for (BoardSpace destination : availableMoves.keySet()) {
             if (destination.getX() == move.getX() && destination.getY() == move.getY()) {
                 correspondingMove = destination;
+                flippablePieces = availableMoves.get(destination);
                 break;
             }
         }
@@ -88,11 +90,16 @@ public class GameState {
             return this;
         }
         
-        // Apply the move
-        // Note: In a real implementation, we would create a simplified version of takeSpaces
-        // that works with our copied board rather than the actual game
+        // Apply the move to the new state's board
+        // 1. Take the space for the current player
+        newState.board[correspondingMove.getX()][correspondingMove.getY()].setType(currentPlayer.getColor());
         
-        // For this skeleton, we'll leave this method incomplete
+        // 2. Flip all the pieces that would be flipped by this move
+        if (flippablePieces != null) {
+            for (BoardSpace piece : flippablePieces) {
+                newState.board[piece.getX()][piece.getY()].setType(currentPlayer.getColor());
+            }
+        }
         
         // Swap players for the next turn
         return newState.swapPlayers();

@@ -93,11 +93,32 @@ public class MonteCarloTreeSearch {
      * @return The newly created child node
      */
     private static <T> GameTreeNode<T> expand(GameTreeNode<T> node) {
-        // In a real implementation, we would generate all possible moves
-        // and add them as children. For this skeleton, we just add a dummy child.
-        GameTreeNode<T> child = new GameTreeNode<>(node.getData());
-        node.addChild(child);
-        return child;
+        // If the node already has children but they're all unvisited,
+        // return a random unvisited child
+        if (!node.getChildren().isEmpty()) {
+            List<GameTreeNode<T>> unvisitedChildren = new ArrayList<>();
+            for (GameTreeNode<T> child : node.getChildren()) {
+                if (child.getVisits() == 0) {
+                    unvisitedChildren.add(child);
+                }
+            }
+            
+            if (!unvisitedChildren.isEmpty()) {
+                return unvisitedChildren.get(random.nextInt(unvisitedChildren.size()));
+            }
+        }
+        
+        // If we're using this in Othello, we'd let the GameState class
+        // generate possible moves, but our algorithm is designed to be general.
+        // Since we don't know how to generate children for an arbitrary T,
+        // we'll return the node itself if it's a leaf.
+        if (node.isLeaf()) {
+            return node;
+        } else {
+            // If it has children but we need a new one, select a random existing child
+            List<GameTreeNode<T>> children = node.getChildren();
+            return children.get(random.nextInt(children.size()));
+        }
     }
     
     /**
