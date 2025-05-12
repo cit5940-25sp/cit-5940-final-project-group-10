@@ -1,13 +1,20 @@
 package othello.gamelogic.strategies;
 
-import deeplearningjava.Network;
-import deeplearningjava.Node;
-import deeplearningjava.Layer;
+import deeplearningjava.factory.NetworkFactory;
+import deeplearningjava.factory.OnnxNetworkLoader;
+import deeplearningjava.api.Network;
+import deeplearningjava.api.TensorNetwork;
+import othello.Constants;
+
+import java.io.IOException;
 
 /**
  * Factory for creating strategy instances.
  */
 public class StrategyFactory {
+    // Static field to store custom ONNX model path
+    private static String customOnnxModelPath = null;
+    
     /**
      * Creates a strategy based on the strategy name.
      * @param strategyName The name of the strategy
@@ -20,54 +27,125 @@ public class StrategyFactory {
             case "expectimax" -> new ExpectimaxStrategy();
             case "mcts" -> new MCTSStrategy();
             case "custom" -> new NeuralStrategy(createDefaultNetwork());
+            case "tensor" -> createTensorNetworkStrategy();
+            case "onnx" -> createOnnxNetworkStrategy();
             default -> throw new IllegalArgumentException("Unknown strategy: " + strategyName);
         };
+    }
+    
+    /**
+     * Sets a custom path for the ONNX model.
+     * 
+     * @param modelPath The path to the custom ONNX model
+     */
+    public static void setCustomOnnxModelPath(String modelPath) {
+        customOnnxModelPath = modelPath;
+        System.out.println("Custom ONNX model path set to: " + modelPath);
     }
     
     /**
      * Creates a default neural network for board evaluation.
      * This network is used when "custom" strategy is selected.
      * 
-     * @return A neural network configured for Othello board evaluation
+     * @return A neural network wrapper configured for Othello board evaluation
      */
-    private static Network createDefaultNetwork() {
-        // Define network architecture for Othello
-        // Input: 8x8x3 (board dimensions + 3 channels for player pieces, opponent pieces, empty)
-        // Hidden layers: 128, 64, 32 neurons
-        // Output: 1 (evaluation score)
+    private static NetworkWrapper createDefaultNetwork() {
+        // Create a neural network specifically designed for Othello evaluation
+        return new NetworkWrapper(NetworkFactory.createOthelloNetwork());
+    }
+    
+    /**
+     * Creates a neural strategy using a tensor network for board evaluation.
+     * This strategy uses 2D board input rather than flattened vector input.
+     * 
+     * @return A neural strategy using tensor network
+     */
+    private static NeuralStrategy createTensorNetworkStrategy() {
+        int boardSize = 8; // Standard Othello board size
+        int channels = 1; // Use 1 channel for simplicity, could be increased for more features
         
-        int inputSize = 8 * 8 * 3; // 8x8 board with 3 channels
-        int[] hiddenLayers = {128, 64, 32};
-        int outputSize = 1;
-        
-        Network network = new Network();
-        
-        // Input layer
-        Layer inputLayer = new Layer();
-        for (int i = 0; i < inputSize; i++) {
-            inputLayer.addNode(new Node(Node.RELU, Node.RELU_DERIVATIVE));
+        return NeuralStrategy.createWithTensorNetwork(boardSize, channels);
+    }
+    
+    /**
+     * Creates a neural strategy using a pre-trained ONNX model.
+     * This strategy loads the network architecture and weights from an ONNX file.
+     * If a custom model path has been set, it will be used instead of the default.
+     * 
+     * @return A neural strategy using a pre-trained ONNX model
+     */
+    public static NeuralStrategy createOnnxNetworkStrategy() {
+        try {
+            // Get the path to the ONNX model (custom or default)
+            String modelPath = (customOnnxModelPath != null) 
+                ? customOnnxModelPath 
+                : OnnxNetworkLoader.getDefaultOthelloModelPath();
+            
+            System.out.println("Creating ONNX neural strategy with model: " + modelPath);
+            
+            // Standard Othello parameters
+            int boardSize = 8;
+            int channels = 1; // Adjust based on the expected input for your model
+            
+            System.out.println("Loading ONNX network with boardSize=" + boardSize + ", channels=" + channels);
+            
+            // Load a tensor network from the ONNX model
+            TensorNetwork network = OnnxNetworkLoader.loadOthelloNetwork(modelPath, boardSize, channels);
+            
+            System.out.println("Successfully loaded ONNX network: " + network.getClass().getSimpleName());
+            System.out.println("Network layers: " + network.getLayerCount());
+            System.out.println("Input shape: " + java.util.Arrays.toString(network.getInputShape()));
+            System.out.println("Output shape: " + java.util.Arrays.toString(network.getOutputShape()));
+            
+            // Create a wrapper for the tensor network
+            TensorNetworkWrapper wrapper = new TensorNetworkWrapper(network, boardSize, channels);
+            
+            // Create a neural strategy with the tensor network
+            return new NeuralStrategy(wrapper);
+        } catch (IOException e) {
+            System.err.println("Failed to load ONNX model: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Fallback to the default tensor network strategy
+            return createTensorNetworkStrategy();
         }
-        network.addLayer(inputLayer);
-        
-        // Hidden layers
-        for (int size : hiddenLayers) {
-            Layer hiddenLayer = new Layer();
-            for (int i = 0; i < size; i++) {
-                hiddenLayer.addNode(new Node(Node.RELU, Node.RELU_DERIVATIVE));
-            }
-            network.addLayer(hiddenLayer);
+    }
+    
+    /**
+     * Creates a neural strategy using a specific ONNX model file.
+     * 
+     * @param modelPath The path to the ONNX model file
+     * @return A neural strategy using the specified ONNX model
+     */
+    public static NeuralStrategy createOnnxNetworkStrategy(String modelPath) {
+        try {
+            System.out.println("Creating ONNX neural strategy with specific model: " + modelPath);
+            
+            // Standard Othello parameters
+            int boardSize = 8;
+            int channels = 1; // Adjust based on the expected input for your model
+            
+            System.out.println("Loading ONNX network with boardSize=" + boardSize + ", channels=" + channels);
+            
+            // Load a tensor network from the ONNX model
+            TensorNetwork network = OnnxNetworkLoader.loadOthelloNetwork(modelPath, boardSize, channels);
+            
+            System.out.println("Successfully loaded ONNX network: " + network.getClass().getSimpleName());
+            System.out.println("Network layers: " + network.getLayerCount());
+            System.out.println("Input shape: " + java.util.Arrays.toString(network.getInputShape()));
+            System.out.println("Output shape: " + java.util.Arrays.toString(network.getOutputShape()));
+            
+            // Create a wrapper for the tensor network
+            TensorNetworkWrapper wrapper = new TensorNetworkWrapper(network, boardSize, channels);
+            
+            // Create a neural strategy with the tensor network
+            return new NeuralStrategy(wrapper);
+        } catch (IOException e) {
+            System.err.println("Failed to load ONNX model from path " + modelPath + ": " + e.getMessage());
+            e.printStackTrace();
+            
+            // Fallback to the default tensor network strategy
+            return createTensorNetworkStrategy();
         }
-        
-        // Output layer
-        Layer outputLayer = new Layer();
-        for (int i = 0; i < outputSize; i++) {
-            outputLayer.addNode(new Node(Node.TANH, Node.TANH_DERIVATIVE)); // Tanh for [-1, 1] range score
-        }
-        network.addLayer(outputLayer);
-        
-        // Initialize connections
-        network.connectLayers();
-        
-        return network;
     }
 }

@@ -1,5 +1,7 @@
 package othello;
 
+import othello.gamelogic.OthelloGame;
+
 public class Constants {
     public static final int[][] BOARD_WEIGHTS =
             {{200, -70, 30, 25, 25, 30, -70, 200},
@@ -12,4 +14,7 @@ public class Constants {
                     {200, -70, 30, 25, 25, 30, -70, 200}};
 
     public static final double EXPLORATION_PARAM = Math.sqrt(2);
+    
+    // Define standard board size
+    public static final int BOARD_SIZE = OthelloGame.GAME_BOARD_SIZE;
 }

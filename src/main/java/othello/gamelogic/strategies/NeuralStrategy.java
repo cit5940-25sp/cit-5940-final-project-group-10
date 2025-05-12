@@ -1,6 +1,6 @@
 package othello.gamelogic.strategies;
 
-import deeplearningjava.Network;
+import deeplearningjava.factory.NetworkFactory;
 import othello.gamelogic.*;
 import java.util.Map;
 import java.util.List;
@@ -8,16 +8,31 @@ import java.util.List;
 /**
  * Implements the custom strategy using a neural network for board evaluation.
  * This is the main integration point between the deep learning framework and the Othello game.
+ * Supports both traditional 1D vector input networks and multidimensional tensor-based networks.
  */
 public class NeuralStrategy implements Strategy {
-    private final Network network;
+    private final NetworkWrapper networkWrapper;
+    private final TensorNetworkWrapper tensorWrapper;
+    private final boolean useTensorNetwork;
     
     /**
-     * Creates a neural network strategy with the provided network
-     * @param network The neural network to use for evaluations
+     * Creates a neural network strategy with the provided vector-based network
+     * @param networkWrapper The neural network wrapper to use for evaluations
      */
-    public NeuralStrategy(Network network) {
-        this.network = network;
+    public NeuralStrategy(NetworkWrapper networkWrapper) {
+        this.networkWrapper = networkWrapper;
+        this.tensorWrapper = null;
+        this.useTensorNetwork = false;
+    }
+    
+    /**
+     * Creates a neural network strategy with the provided tensor-based network
+     * @param tensorWrapper The tensor network wrapper to use for evaluations
+     */
+    public NeuralStrategy(TensorNetworkWrapper tensorWrapper) {
+        this.networkWrapper = null;
+        this.tensorWrapper = tensorWrapper;
+        this.useTensorNetwork = true;
     }
     
     @Override
@@ -60,22 +75,64 @@ public class NeuralStrategy implements Strategy {
      * @return The evaluation score
      */
     private double evaluateWithNetwork(GameState state) {
+        if (useTensorNetwork) {
+            return evaluateWithTensorNetwork(state);
+        } else {
+            return evaluateWithVectorNetwork(state);
+        }
+    }
+    
+    /**
+     * Evaluates a game state using the vector-based neural network
+     * @param state The game state to evaluate
+     * @return The evaluation score
+     */
+    private double evaluateWithVectorNetwork(GameState state) {
         // Convert board state to network input features
         double[] input = BoardToInputMapper.mapToInput(state.getBoard(), state.getCurrentPlayer());
         
         // Pass through the neural network
-        double[] output = network.feedForward(input);
+        double[] output = networkWrapper.feedForward(input);
         
         // Return the evaluation score (assuming single output)
         return output[0];
     }
     
     /**
-     * Returns the neural network used by this strategy
-     * @return The neural network
+     * Evaluates a game state using the tensor-based neural network
+     * @param state The game state to evaluate
+     * @return The evaluation score
      */
-    public Network getNetwork() {
-        return network;
+    private double evaluateWithTensorNetwork(GameState state) {
+        // Get the board
+        BoardSpace[][] board = state.getBoard();
+        
+        // Evaluate the board using the tensor network
+        return tensorWrapper.evaluateBoard(board);
+    }
+    
+    /**
+     * Returns the neural network used by this strategy
+     * @return The neural network wrapper or null if using tensor network
+     */
+    public NetworkWrapper getNetwork() {
+        return networkWrapper;
+    }
+    
+    /**
+     * Returns the tensor network used by this strategy
+     * @return The tensor network wrapper or null if using vector network
+     */
+    public TensorNetworkWrapper getTensorNetwork() {
+        return tensorWrapper;
+    }
+    
+    /**
+     * Checks if this strategy uses a tensor-based network
+     * @return true if using tensor network, false if using vector network
+     */
+    public boolean usesTensorNetwork() {
+        return useTensorNetwork;
     }
     
     /**
@@ -89,5 +146,25 @@ public class NeuralStrategy implements Strategy {
         
         // For skeleton implementation, this is left as a placeholder
         System.out.println("Training neural network strategy for " + iterations + " iterations");
+    }
+    
+    /**
+     * Creates a neural strategy with a default vector-based network for Othello.
+     * @return A fully configured NeuralStrategy
+     */
+    public static NeuralStrategy createDefault() {
+        NetworkWrapper network = new NetworkWrapper(NetworkFactory.createOthelloNetwork());
+        return new NeuralStrategy(network);
+    }
+    
+    /**
+     * Creates a neural strategy with a default tensor-based network for Othello.
+     * @param boardSize The size of the Othello board
+     * @param channels The number of input channels
+     * @return A fully configured NeuralStrategy using tensor network
+     */
+    public static NeuralStrategy createWithTensorNetwork(int boardSize, int channels) {
+        TensorNetworkWrapper tensorWrapper = TensorNetworkWrapper.createDefault(boardSize, channels);
+        return new NeuralStrategy(tensorWrapper);
     }
 }
