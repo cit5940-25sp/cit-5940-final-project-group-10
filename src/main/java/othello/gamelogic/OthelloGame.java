@@ -82,8 +82,8 @@ public class OthelloGame {
             // update board state
             board[x][y].setType(actingPlayer.getColor());
             // take from opponent, give to player
-            opponent.getPlayerOwnedSpacesSpaces().remove(board[x][y]);
-            actingPlayer.getPlayerOwnedSpacesSpaces().add(board[x][y]);
+            opponent.getPlayerOwnedSpaces().remove(board[x][y]);
+            actingPlayer.getPlayerOwnedSpaces().add(board[x][y]);
         }
     }
 
