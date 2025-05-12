@@ -106,28 +106,22 @@ public class OthelloGame {
 
         // check which direction the origin is coming from
         for (BoardSpace origin : origins) {
-            int xdist = origin.getX() - selectedDestination.getX();
-            int ydist = origin.getY() - selectedDestination.getY();
+            int xdist = Integer.signum(origin.getX() - selectedDestination.getX());
+            int ydist = Integer.signum(origin.getY() - selectedDestination.getY());
 
+            int i = selectedDestination.getX();
+            int j = selectedDestination.getY();
 
-            for (int direction = 0; direction < 8; direction++) {
-                // look for direction with the same cardinality as the difference between dest and origin
-                if (dx[direction] == Integer.signum(xdist) && dy[direction] == Integer.signum(ydist)) {
-                    int i = selectedDestination.getX();
-                    int j = selectedDestination.getY();
-
-                    // fill spaces once found
-                    while ((i != origin.getX() || j != origin.getY())) {
-                       if (i != origin.getX()) {
-                           i += dx[direction];
-                       }
-                       if (j != origin.getY()) {
-                           j += dy[direction];
-                       }
-                        if (inBounds(i,j)) {
-                            takeSpace(actingPlayer, opponent, i, j);
-                        }
-                    }
+            // fill spaces once found
+            while ((i != origin.getX() || j != origin.getY())) {
+                if (i != origin.getX()) {
+                    i += xdist;
+                }
+                if (j != origin.getY()) {
+                    j += ydist;
+                }
+                if (inBounds(i, j)) {
+                    takeSpace(actingPlayer, opponent, i, j);
                 }
             }
         }
@@ -141,7 +135,15 @@ public class OthelloGame {
      */
     public BoardSpace computerDecision(ComputerPlayer computer) {
         Player opponent = (computer == playerOne) ? playerTwo : playerOne;
-        return computer.getBestMove(this, opponent);
+        Map<BoardSpace,List<BoardSpace>> moves = getAvailableMoves(computer);
+        if (moves.isEmpty()) return null;
+
+        BoardSpace best = computer.getBestMove(this, opponent);
+
+        takeSpace(computer, opponent, best.getX(), best.getY());
+        takeSpaces(computer, opponent, moves, best);
+
+        return best;
     }
 
 }
