@@ -134,15 +134,14 @@ public class OthelloGame {
     }
 
     /**
-     * PART 2
-     * TODO: Implement this method
      * Gets the computer decision for its turn.
-     * Should call a method within the ComputerPlayer class that returns a BoardSpace using a specific strategy.
+     * Calls the getBestMove method within the ComputerPlayer class that returns a BoardSpace using the strategy.
      * @param computer computer player that is deciding their move for their turn
      * @return the BoardSpace that was decided upon
      */
     public BoardSpace computerDecision(ComputerPlayer computer) {
-        return null;
+        Player opponent = (computer == playerOne) ? playerTwo : playerOne;
+        return computer.getBestMove(this, opponent);
     }
 
 }
