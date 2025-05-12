@@ -78,12 +78,17 @@ public class OthelloGame {
      * @param y the y-coordinate of the space to claim
      */
     public void takeSpace(Player actingPlayer, Player opponent, int x, int y) {
-        if (board[x][y].getType() != actingPlayer.getColor()) {
+        BoardSpace space = board[x][y];
+        if (!actingPlayer.getPlayerOwnedSpaces().contains(board[x][y])) {
             // update board state
-            board[x][y].setType(actingPlayer.getColor());
             // take from opponent, give to player
-            opponent.getPlayerOwnedSpaces().remove(board[x][y]);
-            actingPlayer.getPlayerOwnedSpaces().add(board[x][y]);
+            opponent.getPlayerOwnedSpaces().remove(space);
+
+            if (!actingPlayer.getPlayerOwnedSpaces().contains(space)) {
+                actingPlayer.getPlayerOwnedSpaces().add(board[x][y]);
+            }
+
+            space.setType(actingPlayer.getColor());
         }
     }
 
@@ -98,10 +103,6 @@ public class OthelloGame {
      * @param selectedDestination the specific destination that a HUMAN player selected
      */
     public void takeSpaces(Player actingPlayer, Player opponent, Map<BoardSpace, List<BoardSpace>> availableMoves, BoardSpace selectedDestination) {
-        // cardinal directions
-        int[] dx = {-1, -1, -1, 0, 0, 1, 1, 1};
-        int[] dy = {-1,  0,  1,-1, 1,-1, 0, 1};
-
         List<BoardSpace> origins = availableMoves.get(selectedDestination);
 
         // check which direction the origin is coming from
