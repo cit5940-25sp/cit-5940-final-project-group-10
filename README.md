@@ -1,7 +1,6 @@
 # Repo Layout
 
-Below is a high level summary of what each class or file is for, feel free to jump into the code and comments to get a
-sense of each class's functionality.
+Below is a high level summary of how we organized our project code
 
 We used Claude and ChatGPT to help write the deep learning code.  
 
