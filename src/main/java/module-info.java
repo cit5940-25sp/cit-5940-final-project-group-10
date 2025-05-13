@@ -23,5 +23,4 @@ module othello {
     exports graph.core;
     exports graph.traversal;
     exports graph.search;
-    exports util;
 }
