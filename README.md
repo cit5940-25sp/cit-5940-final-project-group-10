@@ -2,7 +2,7 @@
 
 Below is a high level summary of how we organized our project code
 
-We used Claude and ChatGPT to help write the deep learning code. Specifically, we used AI to help with code relating to functional programming with activation functions, representing tensors as java objects and parsing onnx files.
+We used Claude and ChatGPT to help write parts of the deep learning code. Specifically, we used AI to help with code relating to functional programming with activation functions, representing tensors as java objects and parsing onnx files.
 
 
 ## UML Diagram
