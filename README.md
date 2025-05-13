@@ -4,6 +4,8 @@ Below is a high level summary of how we organized our project code
 
 We used Claude and ChatGPT to help write parts of the deep learning code. Specifically, we used AI to help with code relating to functional programming with activation functions, representing tensors as java objects and parsing onnx files.
 
+If you would like to use a different model, move one of the onnx files from src/main/java/othello/models to the models folder and rename it othello.onnx. 
+
 Please run using maven with the pom.xml
 
 
