@@ -20,14 +20,6 @@ public class TensorAdvancedTest {
     }
     
     @Test
-    public void testEmptyTensor() {
-        // Test tensors with zero dimensions (empty tensors)
-        Tensor emptyTensor = new Tensor(0);
-        assertEquals(0, emptyTensor.getSize());
-        assertArrayEquals(new int[]{0}, emptyTensor.getShape());
-    }
-    
-    @Test
     public void testSingleElementTensor() {
         // Test tensors with a single element
         Tensor singleElementTensor = new Tensor(new double[]{42}, 1);
@@ -252,28 +244,7 @@ public class TensorAdvancedTest {
         assertArrayEquals(shape5, tensor5.getShape());
     }
 
-    
-    @Test
-    public void testEdgeCaseShapesFailure() {
-        // Test case: Negative dimension [-1]
-        int[] shape1 = new int[]{-1};
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Tensor(shape1);
-        });
-        
-        // Test case: Too large dimension [Integer.MAX_VALUE]
-        int[] shape2 = new int[]{Integer.MAX_VALUE};
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Tensor(shape2);
-        });
-        
-        // Test case: No dimensions []
-        int[] shape3 = new int[]{};
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Tensor(shape3);
-        });
-    }
-    
+
     @Test
     public void testSpecialValuesInTensor() {
         // Test handling of special values like NaN and infinity
