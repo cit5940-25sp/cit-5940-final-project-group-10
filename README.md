@@ -8,7 +8,8 @@ We used Claude and ChatGPT to help write parts of the deep learning code. Specif
 ## UML Diagram
 
 ```
-── Othello Classes.png
+── UML_Full.png
+── UML_Simple.png
 ```
 ## Data and scripts used in neural net training
 ```
