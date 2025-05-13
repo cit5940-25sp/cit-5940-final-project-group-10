@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import deeplearningjava.api.Layer.LayerType;
 import deeplearningjava.core.activation.ActivationFunction;
@@ -45,9 +43,33 @@ public class InputLayerTest {
         assertEquals("Linear", activationFunction.getName());
     }
     
-    @ParameterizedTest
-    @ValueSource(ints = {1, 2, 10, 100})
-    public void testLayerSizes(int size) {
+    @Test
+    public void testLayerSizeOne() {
+        int size = 1;
+        InputLayer layer = new InputLayer(size);
+        assertEquals(size, layer.getSize());
+        assertEquals(size, layer.getNodes().size());
+    }
+    
+    @Test
+    public void testLayerSizeTwo() {
+        int size = 2;
+        InputLayer layer = new InputLayer(size);
+        assertEquals(size, layer.getSize());
+        assertEquals(size, layer.getNodes().size());
+    }
+    
+    @Test
+    public void testLayerSizeTen() {
+        int size = 10;
+        InputLayer layer = new InputLayer(size);
+        assertEquals(size, layer.getSize());
+        assertEquals(size, layer.getNodes().size());
+    }
+    
+    @Test
+    public void testLayerSizeHundred() {
+        int size = 100;
         InputLayer layer = new InputLayer(size);
         assertEquals(size, layer.getSize());
         assertEquals(size, layer.getNodes().size());

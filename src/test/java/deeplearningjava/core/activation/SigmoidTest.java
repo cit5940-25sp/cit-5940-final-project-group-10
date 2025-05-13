@@ -1,8 +1,6 @@
 package deeplearningjava.core.activation;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -20,18 +18,29 @@ public class SigmoidTest {
         assertSame(instance1, instance2, "Sigmoid should use singleton pattern");
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "0.0, 0.5", // Input 0, output 0.5
-        "1.0, 0.7310585786", // Small positive
-        "-1.0, 0.2689414214", // Small negative
-        "2.0, 0.8807970779", // Larger positive
-        "-2.0, 0.1192029221"  // Larger negative
-    })
-    public void testApply(double input, double expected) {
+    @Test
+    public void testApply() {
         ActivationFunction sigmoid = Sigmoid.getInstance();
-        assertEquals(expected, sigmoid.apply(input), 0.0001, 
-                     "Sigmoid.apply(" + input + ") should return approximately " + expected);
+        
+        // Input 0, output 0.5
+        assertEquals(0.5, sigmoid.apply(0.0), 0.0001, 
+                     "Sigmoid.apply(0.0) should return approximately 0.5");
+        
+        // Small positive
+        assertEquals(0.7310585786, sigmoid.apply(1.0), 0.0001, 
+                     "Sigmoid.apply(1.0) should return approximately 0.7310585786");
+        
+        // Small negative
+        assertEquals(0.2689414214, sigmoid.apply(-1.0), 0.0001, 
+                     "Sigmoid.apply(-1.0) should return approximately 0.2689414214");
+        
+        // Larger positive
+        assertEquals(0.8807970779, sigmoid.apply(2.0), 0.0001, 
+                     "Sigmoid.apply(2.0) should return approximately 0.8807970779");
+        
+        // Larger negative
+        assertEquals(0.1192029221, sigmoid.apply(-2.0), 0.0001, 
+                     "Sigmoid.apply(-2.0) should return approximately 0.1192029221");
     }
     
     @Test
@@ -44,16 +53,21 @@ public class SigmoidTest {
         assertTrue(sigmoid.apply(-100.0) < 0.001, "Sigmoid of large negative should approach 0.0");
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "0.0, 0.25", // Derivative at 0 is 0.25
-        "2.0, 0.1049935854", // Derivative at 2.0
-        "-2.0, 0.1049935854"  // Derivative at -2.0
-    })
-    public void testDerivative(double input, double expected) {
+    @Test
+    public void testDerivative() {
         ActivationFunction sigmoid = Sigmoid.getInstance();
-        assertEquals(expected, sigmoid.derivative(input), 0.0001,
-                     "Sigmoid.derivative(" + input + ") should return approximately " + expected);
+        
+        // Derivative at 0 is 0.25
+        assertEquals(0.25, sigmoid.derivative(0.0), 0.0001,
+                     "Sigmoid.derivative(0.0) should return approximately 0.25");
+        
+        // Derivative at 2.0
+        assertEquals(0.1049935854, sigmoid.derivative(2.0), 0.0001,
+                     "Sigmoid.derivative(2.0) should return approximately 0.1049935854");
+        
+        // Derivative at -2.0
+        assertEquals(0.1049935854, sigmoid.derivative(-2.0), 0.0001,
+                     "Sigmoid.derivative(-2.0) should return approximately 0.1049935854");
     }
     
     @Test

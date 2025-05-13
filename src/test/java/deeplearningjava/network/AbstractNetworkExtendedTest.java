@@ -3,8 +3,6 @@ package deeplearningjava.network;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
 
@@ -38,9 +36,9 @@ public class AbstractNetworkExtendedTest {
     
     @Test
     public void testConstructor() {
-        AbstractNetwork network = new TestNetwork(AbstractNetwork.NetworkType.FEED_FORWARD);
+        AbstractNetwork network = new TestNetwork(AbstractNetwork.NetworkType.DENSE);
         assertNotNull(network);
-        assertEquals(AbstractNetwork.NetworkType.FEED_FORWARD, network.getType());
+        assertEquals(AbstractNetwork.NetworkType.DENSE, network.getType());
         assertEquals(0.01, network.getLearningRate(), 0.0001); // Default learning rate
     }
     
@@ -53,18 +51,66 @@ public class AbstractNetworkExtendedTest {
         assertTrue(exception.getMessage().contains("networkType must not be null"));
     }
     
-    @ParameterizedTest
-    @ValueSource(doubles = {0.1, 0.01, 0.001, 1.0})
-    public void testSetValidLearningRate(double rate) {
-        AbstractNetwork network = new TestNetwork(AbstractNetwork.NetworkType.FEED_FORWARD);
+    @Test
+    public void testSetValidLearningRate_0_1() {
+        double rate = 0.1;
+        AbstractNetwork network = new TestNetwork(AbstractNetwork.NetworkType.DENSE);
         network.setLearningRate(rate);
         assertEquals(rate, network.getLearningRate(), 0.0001);
     }
     
-    @ParameterizedTest
-    @ValueSource(doubles = {0.0, -0.1, -1.0})
-    public void testSetInvalidLearningRateThrowsException(double rate) {
-        AbstractNetwork network = new TestNetwork(AbstractNetwork.NetworkType.FEED_FORWARD);
+    @Test
+    public void testSetValidLearningRate_0_01() {
+        double rate = 0.01;
+        AbstractNetwork network = new TestNetwork(AbstractNetwork.NetworkType.DENSE);
+        network.setLearningRate(rate);
+        assertEquals(rate, network.getLearningRate(), 0.0001);
+    }
+    
+    @Test
+    public void testSetValidLearningRate_0_001() {
+        double rate = 0.001;
+        AbstractNetwork network = new TestNetwork(AbstractNetwork.NetworkType.DENSE);
+        network.setLearningRate(rate);
+        assertEquals(rate, network.getLearningRate(), 0.0001);
+    }
+    
+    @Test
+    public void testSetValidLearningRate_1_0() {
+        double rate = 1.0;
+        AbstractNetwork network = new TestNetwork(AbstractNetwork.NetworkType.DENSE);
+        network.setLearningRate(rate);
+        assertEquals(rate, network.getLearningRate(), 0.0001);
+    }
+    
+    @Test
+    public void testSetInvalidLearningRateThrowsException_0_0() {
+        double rate = 0.0;
+        AbstractNetwork network = new TestNetwork(AbstractNetwork.NetworkType.DENSE);
+        
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            network.setLearningRate(rate);
+        });
+        
+        assertTrue(exception.getMessage().contains("Learning rate must be positive"));
+    }
+    
+    @Test
+    public void testSetInvalidLearningRateThrowsException_negative_0_1() {
+        double rate = -0.1;
+        AbstractNetwork network = new TestNetwork(AbstractNetwork.NetworkType.DENSE);
+        
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            network.setLearningRate(rate);
+        });
+        
+        assertTrue(exception.getMessage().contains("Learning rate must be positive"));
+    }
+    
+    @Test
+    public void testSetInvalidLearningRateThrowsException_negative_1_0() {
+        double rate = -1.0;
+        AbstractNetwork network = new TestNetwork(AbstractNetwork.NetworkType.DENSE);
         
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             network.setLearningRate(rate);
@@ -75,13 +121,13 @@ public class AbstractNetworkExtendedTest {
     
     @Test
     public void testGetSummary() {
-        AbstractNetwork network = new TestNetwork(AbstractNetwork.NetworkType.FEED_FORWARD);
+        AbstractNetwork network = new TestNetwork(AbstractNetwork.NetworkType.DENSE);
         network.setLearningRate(0.05);
         
         String summary = network.getSummary();
         
         // Check summary includes expected information
-        assertTrue(summary.contains("FEED_FORWARD Network Summary"));
+        assertTrue(summary.contains("DENSE Network Summary"));
         assertTrue(summary.contains("Layer Count: 3"));
         assertTrue(summary.contains("Learning Rate: 0.05"));
         assertTrue(summary.contains("Test Network Details"));
@@ -89,13 +135,13 @@ public class AbstractNetworkExtendedTest {
     
     @Test
     public void testValidateNetwork() {
-        AbstractNetwork validNetwork = new TestNetwork(AbstractNetwork.NetworkType.FEED_FORWARD);
+        AbstractNetwork validNetwork = new TestNetwork(AbstractNetwork.NetworkType.DENSE);
         
         // Should not throw an exception
         validNetwork.validateNetwork();
         
         // Create a network that returns false for isInitialized
-        AbstractNetwork invalidNetwork = new AbstractNetwork(AbstractNetwork.NetworkType.FEED_FORWARD) {
+        AbstractNetwork invalidNetwork = new AbstractNetwork(AbstractNetwork.NetworkType.DENSE) {
             @Override
             protected void appendDetails(StringBuilder summary) {
                 // No details
@@ -121,7 +167,7 @@ public class AbstractNetworkExtendedTest {
     
     @Test
     public void testValidateBatchParameters() {
-        AbstractNetwork network = new TestNetwork(AbstractNetwork.NetworkType.FEED_FORWARD);
+        AbstractNetwork network = new TestNetwork(AbstractNetwork.NetworkType.DENSE);
         
         // Valid parameters
         Double[] inputs = {1.0, 2.0, 3.0};

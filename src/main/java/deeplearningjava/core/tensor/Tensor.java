@@ -19,6 +19,16 @@ public class Tensor {
      * @param shape The shape of the tensor (dimensions)
      */
     public Tensor(int... shape) {
+        if (shape.length == 0) {
+            throw new IllegalArgumentException("Tensor must have at least one dimension");
+        }
+        
+        for (int dim : shape) {
+            if (dim <= 0) {
+                throw new IllegalArgumentException("All dimensions must be positive");
+            }
+        }
+        
         this.shape = shape.clone();
         this.strides = computeStrides(shape);
         int size = computeSize(shape);
@@ -33,6 +43,16 @@ public class Tensor {
      * @throws IllegalArgumentException if the data length doesn't match the product of shape dimensions
      */
     public Tensor(double[] data, int... shape) {
+        if (shape.length == 0) {
+            throw new IllegalArgumentException("Tensor must have at least one dimension");
+        }
+        
+        for (int dim : shape) {
+            if (dim <= 0) {
+                throw new IllegalArgumentException("All dimensions must be positive");
+            }
+        }
+        
         this.shape = shape.clone();
         this.strides = computeStrides(shape);
         int size = computeSize(shape);

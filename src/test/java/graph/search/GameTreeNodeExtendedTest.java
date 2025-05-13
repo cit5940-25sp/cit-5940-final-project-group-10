@@ -3,8 +3,6 @@ package graph.search;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
@@ -137,9 +135,130 @@ public class GameTreeNodeExtendedTest {
         assertEquals(10.0, node.getTotalScore(), 0.001);
     }
     
-    @ParameterizedTest
-    @ValueSource(doubles = {0.1, 0.5, 1.0, 1.414, 2.0})
-    public void testUCB1WithDifferentExplorationParams(double explorationParam) {
+    @Test
+    public void testUCB1WithExplorationParam0_1() {
+        double explorationParam = 0.1;
+        
+        // Create a parent with some visits
+        GameTreeNode<Integer> parent = new GameTreeNode<>(0);
+        for (int i = 0; i < 10; i++) {
+            parent.incrementVisits();
+        }
+        
+        // Create a child with some visits and score
+        GameTreeNode<Integer> child = parent.addChild(1);
+        for (int i = 0; i < 5; i++) {
+            child.incrementVisits();
+        }
+        child.addScore(10.0);
+        
+        // Calculate UCB1
+        double ucb1 = child.getUCB1(explorationParam);
+        
+        // Expected UCB1 values
+        // Exploitation = 10.0 / 5 = 2.0
+        // Exploration = explorationParam * sqrt(ln(10) / 5)
+        double expectedExploitation = 2.0;
+        double expectedExploration = explorationParam * Math.sqrt(Math.log(10) / 5);
+        double expectedUCB1 = expectedExploitation + expectedExploration;
+        
+        assertEquals(expectedUCB1, ucb1, 0.001);
+    }
+    
+    @Test
+    public void testUCB1WithExplorationParam0_5() {
+        double explorationParam = 0.5;
+        
+        // Create a parent with some visits
+        GameTreeNode<Integer> parent = new GameTreeNode<>(0);
+        for (int i = 0; i < 10; i++) {
+            parent.incrementVisits();
+        }
+        
+        // Create a child with some visits and score
+        GameTreeNode<Integer> child = parent.addChild(1);
+        for (int i = 0; i < 5; i++) {
+            child.incrementVisits();
+        }
+        child.addScore(10.0);
+        
+        // Calculate UCB1
+        double ucb1 = child.getUCB1(explorationParam);
+        
+        // Expected UCB1 values
+        // Exploitation = 10.0 / 5 = 2.0
+        // Exploration = explorationParam * sqrt(ln(10) / 5)
+        double expectedExploitation = 2.0;
+        double expectedExploration = explorationParam * Math.sqrt(Math.log(10) / 5);
+        double expectedUCB1 = expectedExploitation + expectedExploration;
+        
+        assertEquals(expectedUCB1, ucb1, 0.001);
+    }
+    
+    @Test
+    public void testUCB1WithExplorationParam1_0() {
+        double explorationParam = 1.0;
+        
+        // Create a parent with some visits
+        GameTreeNode<Integer> parent = new GameTreeNode<>(0);
+        for (int i = 0; i < 10; i++) {
+            parent.incrementVisits();
+        }
+        
+        // Create a child with some visits and score
+        GameTreeNode<Integer> child = parent.addChild(1);
+        for (int i = 0; i < 5; i++) {
+            child.incrementVisits();
+        }
+        child.addScore(10.0);
+        
+        // Calculate UCB1
+        double ucb1 = child.getUCB1(explorationParam);
+        
+        // Expected UCB1 values
+        // Exploitation = 10.0 / 5 = 2.0
+        // Exploration = explorationParam * sqrt(ln(10) / 5)
+        double expectedExploitation = 2.0;
+        double expectedExploration = explorationParam * Math.sqrt(Math.log(10) / 5);
+        double expectedUCB1 = expectedExploitation + expectedExploration;
+        
+        assertEquals(expectedUCB1, ucb1, 0.001);
+    }
+    
+    @Test
+    public void testUCB1WithExplorationParam1_414() {
+        double explorationParam = 1.414;
+        
+        // Create a parent with some visits
+        GameTreeNode<Integer> parent = new GameTreeNode<>(0);
+        for (int i = 0; i < 10; i++) {
+            parent.incrementVisits();
+        }
+        
+        // Create a child with some visits and score
+        GameTreeNode<Integer> child = parent.addChild(1);
+        for (int i = 0; i < 5; i++) {
+            child.incrementVisits();
+        }
+        child.addScore(10.0);
+        
+        // Calculate UCB1
+        double ucb1 = child.getUCB1(explorationParam);
+        
+        // Expected UCB1 values
+        // Exploitation = 10.0 / 5 = 2.0
+        // Exploration = explorationParam * sqrt(ln(10) / 5)
+        double expectedExploitation = 2.0;
+        double expectedExploration = explorationParam * Math.sqrt(Math.log(10) / 5);
+        double expectedUCB1 = expectedExploitation + expectedExploration;
+        
+        assertEquals(expectedUCB1, ucb1, 0.001);
+    }
+    
+    @Test
+    public void testUCB1WithExplorationParam2_0() {
+        double explorationParam = 2.0;
+        
         // Create a parent with some visits
         GameTreeNode<Integer> parent = new GameTreeNode<>(0);
         for (int i = 0; i < 10; i++) {

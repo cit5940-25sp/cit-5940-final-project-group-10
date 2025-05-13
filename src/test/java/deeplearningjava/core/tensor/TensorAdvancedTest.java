@@ -3,14 +3,9 @@ package deeplearningjava.core.tensor;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
 import java.util.Random;
-import java.util.stream.Stream;
 
 /**
  * Advanced tests for the Tensor class, focusing on edge cases and complex operations.
@@ -219,58 +214,64 @@ public class TensorAdvancedTest {
     /**
      * Test creating tensors with different shapes
      */
-    @ParameterizedTest
-    @MethodSource("provideShapes")
-    public void testMultipleShapes(int[] shape, int expectedSize, int expectedRank) {
-        Tensor tensor = new Tensor(shape);
+    @Test
+    public void testMultipleShapes() {
+        // Test shape: [5]
+        int[] shape1 = new int[]{5};
+        Tensor tensor1 = new Tensor(shape1);
+        assertEquals(5, tensor1.getSize());
+        assertEquals(1, tensor1.getRank());
+        assertArrayEquals(shape1, tensor1.getShape());
         
-        assertEquals(expectedSize, tensor.getSize());
-        assertEquals(expectedRank, tensor.getRank());
-        assertArrayEquals(shape, tensor.getShape());
+        // Test shape: [2, 3]
+        int[] shape2 = new int[]{2, 3};
+        Tensor tensor2 = new Tensor(shape2);
+        assertEquals(6, tensor2.getSize());
+        assertEquals(2, tensor2.getRank());
+        assertArrayEquals(shape2, tensor2.getShape());
+        
+        // Test shape: [2, 2, 2]
+        int[] shape3 = new int[]{2, 2, 2};
+        Tensor tensor3 = new Tensor(shape3);
+        assertEquals(8, tensor3.getSize());
+        assertEquals(3, tensor3.getRank());
+        assertArrayEquals(shape3, tensor3.getShape());
+        
+        // Test shape: [1, 3, 5, 7]
+        int[] shape4 = new int[]{1, 3, 5, 7};
+        Tensor tensor4 = new Tensor(shape4);
+        assertEquals(105, tensor4.getSize());
+        assertEquals(4, tensor4.getRank());
+        assertArrayEquals(shape4, tensor4.getShape());
+        
+        // Test shape: [2, 2, 2, 2, 2]
+        int[] shape5 = new int[]{2, 2, 2, 2, 2};
+        Tensor tensor5 = new Tensor(shape5);
+        assertEquals(32, tensor5.getSize());
+        assertEquals(5, tensor5.getRank());
+        assertArrayEquals(shape5, tensor5.getShape());
     }
+
     
-    /**
-     * Provides various shapes for parameterized tests
-     */
-    private static Stream<Arguments> provideShapes() {
-        return Stream.of(
-            Arguments.of(new int[]{5}, 5, 1),
-            Arguments.of(new int[]{2, 3}, 6, 2),
-            Arguments.of(new int[]{2, 2, 2}, 8, 3),
-            Arguments.of(new int[]{1, 3, 5, 7}, 105, 4),
-            Arguments.of(new int[]{2, 2, 2, 2, 2}, 32, 5)
-        );
-    }
-    
-    /**
-     * Test tensor operations with edge case shapes
-     */
-    @ParameterizedTest
-    @MethodSource("provideEdgeCaseShapes")
-    public void testEdgeCaseShapes(int[] shape, boolean shouldSucceed) {
-        if (shouldSucceed) {
-            // Should create without exception
-            Tensor tensor = new Tensor(shape);
-            assertArrayEquals(shape, tensor.getShape());
-        } else {
-            // Should throw exception
-            assertThrows(IllegalArgumentException.class, () -> {
-                new Tensor(shape);
-            });
-        }
-    }
-    
-    /**
-     * Provides edge case shapes for parameterized tests
-     */
-    private static Stream<Arguments> provideEdgeCaseShapes() {
-        return Stream.of(
-            Arguments.of(new int[]{0}, true),         // Empty tensor
-            Arguments.of(new int[]{-1}, false),       // Negative dimension
-            Arguments.of(new int[]{Integer.MAX_VALUE}, false), // Too large dimension
-            Arguments.of(new int[]{1, 0, 3}, true),   // Zero in middle
-            Arguments.of(new int[]{}, false)          // No dimensions
-        );
+    @Test
+    public void testEdgeCaseShapesFailure() {
+        // Test case: Negative dimension [-1]
+        int[] shape1 = new int[]{-1};
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Tensor(shape1);
+        });
+        
+        // Test case: Too large dimension [Integer.MAX_VALUE]
+        int[] shape2 = new int[]{Integer.MAX_VALUE};
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Tensor(shape2);
+        });
+        
+        // Test case: No dimensions []
+        int[] shape3 = new int[]{};
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Tensor(shape3);
+        });
     }
     
     @Test

@@ -21,6 +21,14 @@ public class TestTreeNode<T> implements TreeNode<T> {
         return data;
     }
     
+    /**
+     * Sets the data for this node.
+     * @param data The new data
+     */
+    public void setData(T data) {
+        this.data = data;
+    }
+    
     @Override
     public List<TreeNode<T>> getChildren() {
         return children;

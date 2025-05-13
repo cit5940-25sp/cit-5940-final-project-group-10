@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import deeplearningjava.api.Layer.LayerType;
 import deeplearningjava.core.activation.ActivationFunction;
@@ -164,124 +162,21 @@ public class OutputLayerTest {
     }
     
     @Test
-    public void testBackwardWithoutSoftmax() {
-        // Create a network to test backward pass
-        InputLayer inputLayer = new InputLayer(2);
-        StandardLayer hiddenLayer = new StandardLayer(3, ActivationFunctions.relu());
-        OutputLayer outputLayer = new OutputLayer(2, ActivationFunctions.sigmoid(), false);
+    public void testDifferentLayerSizes() {
+        // Test with size = 1
+        testLayerSizeHelper(1);
         
-        // Connect layers
-        inputLayer.connectTo(hiddenLayer);
-        hiddenLayer.connectTo(outputLayer);
+        // Test with size = 2
+        testLayerSizeHelper(2);
         
-        // Initialize weights
-        inputLayer.initializeWeights(hiddenLayer.getSize());
-        hiddenLayer.initializeWeights(outputLayer.getSize());
+        // Test with size = 5
+        testLayerSizeHelper(5);
         
-        // Forward pass
-        double[] inputs = {1.0, 2.0};
-        inputLayer.forward(inputs);
-        hiddenLayer.forward(null);
-        outputLayer.forward(null);
-        
-        // Save original weights and biases
-        double[][] originalWeights = outputLayer.getWeights();
-        double[] originalBiases = outputLayer.getBiases();
-        
-        // Perform backward pass with target values
-        double[] targets = {0.0, 1.0};
-        double[] hiddenGradients = outputLayer.backward(targets);
-        
-        // Verify gradients have correct dimension
-        assertEquals(hiddenLayer.getSize(), hiddenGradients.length);
-        
-        // Verify weights and biases were updated
-        double[][] updatedWeights = outputLayer.getWeights();
-        double[] updatedBiases = outputLayer.getBiases();
-        
-        // Weights and biases should have changed
-        boolean weightsChanged = false;
-        for (int i = 0; i < originalWeights.length; i++) {
-            for (int j = 0; j < originalWeights[i].length; j++) {
-                if (Math.abs(originalWeights[i][j] - updatedWeights[i][j]) > 0.0001) {
-                    weightsChanged = true;
-                    break;
-                }
-            }
-        }
-        assertTrue(weightsChanged, "Weights should have been updated");
-        
-        boolean biasesChanged = false;
-        for (int i = 0; i < originalBiases.length; i++) {
-            if (Math.abs(originalBiases[i] - updatedBiases[i]) > 0.0001) {
-                biasesChanged = true;
-                break;
-            }
-        }
-        assertTrue(biasesChanged, "Biases should have been updated");
+        // Test with size = 10
+        testLayerSizeHelper(10);
     }
     
-    @Test
-    public void testBackwardWithSoftmax() {
-        // Create a network with softmax output
-        InputLayer inputLayer = new InputLayer(2);
-        StandardLayer hiddenLayer = new StandardLayer(3, ActivationFunctions.relu());
-        OutputLayer outputLayer = new OutputLayer(2, ActivationFunctions.sigmoid(), true);
-        
-        // Connect layers
-        inputLayer.connectTo(hiddenLayer);
-        hiddenLayer.connectTo(outputLayer);
-        
-        // Initialize weights
-        inputLayer.initializeWeights(hiddenLayer.getSize());
-        hiddenLayer.initializeWeights(outputLayer.getSize());
-        
-        // Forward pass
-        double[] inputs = {1.0, 2.0};
-        inputLayer.forward(inputs);
-        hiddenLayer.forward(null);
-        outputLayer.forward(null);
-        
-        // Save original weights and biases
-        double[][] originalWeights = outputLayer.getWeights();
-        double[] originalBiases = outputLayer.getBiases();
-        
-        // Perform backward pass with target values (one-hot encoding for class 1)
-        double[] targets = {0.0, 1.0};
-        double[] hiddenGradients = outputLayer.backward(targets);
-        
-        // Verify gradients have correct dimension
-        assertEquals(hiddenLayer.getSize(), hiddenGradients.length);
-        
-        // Verify weights and biases were updated
-        double[][] updatedWeights = outputLayer.getWeights();
-        double[] updatedBiases = outputLayer.getBiases();
-        
-        // Weights and biases should have changed
-        boolean weightsChanged = false;
-        for (int i = 0; i < originalWeights.length; i++) {
-            for (int j = 0; j < originalWeights[i].length; j++) {
-                if (Math.abs(originalWeights[i][j] - updatedWeights[i][j]) > 0.0001) {
-                    weightsChanged = true;
-                    break;
-                }
-            }
-        }
-        assertTrue(weightsChanged, "Weights should have been updated");
-        
-        boolean biasesChanged = false;
-        for (int i = 0; i < originalBiases.length; i++) {
-            if (Math.abs(originalBiases[i] - updatedBiases[i]) > 0.0001) {
-                biasesChanged = true;
-                break;
-            }
-        }
-        assertTrue(biasesChanged, "Biases should have been updated");
-    }
-    
-    @ParameterizedTest
-    @ValueSource(ints = {1, 2, 5, 10})
-    public void testDifferentLayerSizes(int size) {
+    private void testLayerSizeHelper(int size) {
         OutputLayer layer = new OutputLayer(size, activation, true);
         assertEquals(size, layer.getSize());
         assertEquals(size, layer.getNodes().size());

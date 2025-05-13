@@ -1,8 +1,6 @@
 package deeplearningjava.core.activation;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -41,19 +39,30 @@ public class LeakyReLUTest {
         assertEquals(0.2, leakyReLU3.getAlpha(), 0.0001, "Constructor should set alpha value");
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "5.0, 5.0", // Positive input
-        "0.0, 0.0", // Zero
-        "-5.0, -0.05", // Negative input with alpha 0.01
-        "100.0, 100.0", // Large positive
-        "-100.0, -1.0" // Large negative with alpha 0.01
-    })
-    public void testApply(double input, double expected) {
+    @Test
+    public void testApply() {
         // Use alpha = 0.01 for these tests
         ActivationFunction leakyReLU = LeakyReLU.withAlpha(0.01);
-        assertEquals(expected, leakyReLU.apply(input), 0.0001, 
-                     "LeakyReLU.apply(" + input + ") should return approximately " + expected);
+        
+        // Positive input
+        assertEquals(5.0, leakyReLU.apply(5.0), 0.0001, 
+                     "LeakyReLU.apply(5.0) should return approximately 5.0");
+        
+        // Zero
+        assertEquals(0.0, leakyReLU.apply(0.0), 0.0001, 
+                     "LeakyReLU.apply(0.0) should return approximately 0.0");
+        
+        // Negative input with alpha 0.01
+        assertEquals(-0.05, leakyReLU.apply(-5.0), 0.0001, 
+                     "LeakyReLU.apply(-5.0) should return approximately -0.05");
+        
+        // Large positive
+        assertEquals(100.0, leakyReLU.apply(100.0), 0.0001, 
+                     "LeakyReLU.apply(100.0) should return approximately 100.0");
+        
+        // Large negative with alpha 0.01
+        assertEquals(-1.0, leakyReLU.apply(-100.0), 0.0001, 
+                     "LeakyReLU.apply(-100.0) should return approximately -1.0");
     }
     
     @Test
@@ -69,18 +78,26 @@ public class LeakyReLUTest {
         }
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "5.0, 1.0", // Positive input: derivative is 1
-        "-5.0, 0.01", // Negative input: derivative is alpha
-        "100.0, 1.0", // Large positive
-        "-100.0, 0.01" // Large negative
-    })
-    public void testDerivative(double input, double expected) {
+    @Test
+    public void testDerivative() {
         // Use alpha = 0.01 for these tests
         ActivationFunction leakyReLU = LeakyReLU.withAlpha(0.01);
-        assertEquals(expected, leakyReLU.derivative(input), 0.0001,
-                     "LeakyReLU.derivative(" + input + ") should return " + expected);
+        
+        // Positive input: derivative is 1
+        assertEquals(1.0, leakyReLU.derivative(5.0), 0.0001,
+                     "LeakyReLU.derivative(5.0) should return 1.0");
+        
+        // Negative input: derivative is alpha
+        assertEquals(0.01, leakyReLU.derivative(-5.0), 0.0001,
+                     "LeakyReLU.derivative(-5.0) should return 0.01");
+        
+        // Large positive
+        assertEquals(1.0, leakyReLU.derivative(100.0), 0.0001,
+                     "LeakyReLU.derivative(100.0) should return 1.0");
+        
+        // Large negative
+        assertEquals(0.01, leakyReLU.derivative(-100.0), 0.0001,
+                     "LeakyReLU.derivative(-100.0) should return 0.01");
     }
     
     @Test

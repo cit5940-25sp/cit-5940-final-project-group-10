@@ -1,8 +1,6 @@
 package deeplearningjava.core.activation;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -20,33 +18,47 @@ public class ReLUTest {
         assertSame(instance1, instance2, "ReLU should use singleton pattern");
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "5.0, 5.0", // Positive input
-        "0.0, 0.0", // Zero
-        "-5.0, 0.0", // Negative input
-        "100.0, 100.0", // Large positive
-        "-100.0, 0.0", // Large negative
-        "0.5, 0.5", // Small positive
-        "-0.5, 0.0"  // Small negative
-    })
-    public void testApply(double input, double expected) {
+    @Test
+    public void testApply() {
         ActivationFunction relu = ReLU.getInstance();
-        assertEquals(expected, relu.apply(input), 0.0001, 
-                     "ReLU.apply(" + input + ") should return " + expected);
+        
+        // Positive input
+        assertEquals(5.0, relu.apply(5.0), 0.0001, "ReLU.apply(5.0) should return 5.0");
+        
+        // Zero
+        assertEquals(0.0, relu.apply(0.0), 0.0001, "ReLU.apply(0.0) should return 0.0");
+        
+        // Negative input
+        assertEquals(0.0, relu.apply(-5.0), 0.0001, "ReLU.apply(-5.0) should return 0.0");
+        
+        // Large positive
+        assertEquals(100.0, relu.apply(100.0), 0.0001, "ReLU.apply(100.0) should return 100.0");
+        
+        // Large negative
+        assertEquals(0.0, relu.apply(-100.0), 0.0001, "ReLU.apply(-100.0) should return 0.0");
+        
+        // Small positive
+        assertEquals(0.5, relu.apply(0.5), 0.0001, "ReLU.apply(0.5) should return 0.5");
+        
+        // Small negative
+        assertEquals(0.0, relu.apply(-0.5), 0.0001, "ReLU.apply(-0.5) should return 0.0");
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "5.0, 1.0", // Positive input: derivative is 1
-        "-5.0, 0.0", // Negative input: derivative is 0
-        "100.0, 1.0", // Large positive
-        "-100.0, 0.0", // Large negative
-    })
-    public void testDerivative(double input, double expected) {
+    @Test
+    public void testDerivative() {
         ActivationFunction relu = ReLU.getInstance();
-        assertEquals(expected, relu.derivative(input), 0.0001,
-                     "ReLU.derivative(" + input + ") should return " + expected);
+        
+        // Positive input: derivative is 1
+        assertEquals(1.0, relu.derivative(5.0), 0.0001, "ReLU.derivative(5.0) should return 1.0");
+        
+        // Negative input: derivative is 0
+        assertEquals(0.0, relu.derivative(-5.0), 0.0001, "ReLU.derivative(-5.0) should return 0.0");
+        
+        // Large positive
+        assertEquals(1.0, relu.derivative(100.0), 0.0001, "ReLU.derivative(100.0) should return 1.0");
+        
+        // Large negative
+        assertEquals(0.0, relu.derivative(-100.0), 0.0001, "ReLU.derivative(-100.0) should return 0.0");
     }
     
     @Test

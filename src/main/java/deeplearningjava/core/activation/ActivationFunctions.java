@@ -16,7 +16,11 @@ public class ActivationFunctions {
         registerFunction(Sigmoid.getInstance());
         registerFunction(Tanh.getInstance());
         registerFunction(Linear.getInstance());
-        registerFunction(LeakyReLU.getInstance());
+        
+        // Register LeakyReLU with both the full name and the simple name for backward compatibility
+        LeakyReLU leakyReLU = LeakyReLU.getInstance();
+        registerFunction(leakyReLU);
+        FUNCTIONS.put("leakyrelu", leakyReLU); // Register with lowercase simplified name
     }
     
     private ActivationFunctions() {

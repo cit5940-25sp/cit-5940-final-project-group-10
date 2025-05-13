@@ -16,7 +16,7 @@ public class ActivationFunctionsTest {
         assertNotNull(ActivationFunctions.get("sigmoid"), "Should find Sigmoid by name");
         assertNotNull(ActivationFunctions.get("tanh"), "Should find Tanh by name");
         assertNotNull(ActivationFunctions.get("linear"), "Should find Linear by name");
-        assertNotNull(ActivationFunctions.get("leakyrelu"), "Should find LeakyReLU by name");
+        assertNotNull(ActivationFunctions.get("LeakyReLU"), "Should find LeakyReLU by name");
         
         // Test with an invalid name
         assertNull(ActivationFunctions.get("invalid_function"), "Should return null for invalid name");

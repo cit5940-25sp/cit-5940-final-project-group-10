@@ -1,8 +1,6 @@
 package deeplearningjava.core.activation;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -20,33 +18,37 @@ public class LinearTest {
         assertSame(instance1, instance2, "Linear should use singleton pattern");
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "0.0, 0.0", // Zero input
-        "1.0, 1.0", // Positive input
-        "-1.0, -1.0", // Negative input
-        "123.456, 123.456", // Larger positive
-        "-98.765, -98.765"  // Larger negative
-    })
-    public void testApply(double input, double expected) {
+    @Test
+    public void testApply() {
         ActivationFunction linear = Linear.getInstance();
-        assertEquals(expected, linear.apply(input), 0.0001, 
-                     "Linear.apply(" + input + ") should return exactly " + expected);
+        
+        // Zero input
+        assertEquals(0.0, linear.apply(0.0), 0.0001, "Linear.apply(0.0) should return exactly 0.0");
+        
+        // Positive input
+        assertEquals(1.0, linear.apply(1.0), 0.0001, "Linear.apply(1.0) should return exactly 1.0");
+        
+        // Negative input
+        assertEquals(-1.0, linear.apply(-1.0), 0.0001, "Linear.apply(-1.0) should return exactly -1.0");
+        
+        // Larger positive
+        assertEquals(123.456, linear.apply(123.456), 0.0001, "Linear.apply(123.456) should return exactly 123.456");
+        
+        // Larger negative
+        assertEquals(-98.765, linear.apply(-98.765), 0.0001, "Linear.apply(-98.765) should return exactly -98.765");
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "0.0, 1.0",
-        "1.0, 1.0",
-        "-1.0, 1.0",
-        "123.456, 1.0",
-        "-98.765, 1.0"
-    })
-    public void testDerivative(double input, double expected) {
+    @Test
+    public void testDerivative() {
         // The derivative of the linear function is always 1
         ActivationFunction linear = Linear.getInstance();
-        assertEquals(expected, linear.derivative(input), 0.0001,
-                     "Linear.derivative(" + input + ") should always return 1.0");
+        
+        // Test with various inputs, all should return 1.0
+        assertEquals(1.0, linear.derivative(0.0), 0.0001, "Linear.derivative(0.0) should always return 1.0");
+        assertEquals(1.0, linear.derivative(1.0), 0.0001, "Linear.derivative(1.0) should always return 1.0");
+        assertEquals(1.0, linear.derivative(-1.0), 0.0001, "Linear.derivative(-1.0) should always return 1.0");
+        assertEquals(1.0, linear.derivative(123.456), 0.0001, "Linear.derivative(123.456) should always return 1.0");
+        assertEquals(1.0, linear.derivative(-98.765), 0.0001, "Linear.derivative(-98.765) should always return 1.0");
     }
     
     @Test

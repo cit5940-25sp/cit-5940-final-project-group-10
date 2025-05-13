@@ -3,8 +3,6 @@ package deeplearningjava.network;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import deeplearningjava.api.Layer;
 import deeplearningjava.api.TensorLayer;
@@ -378,6 +376,8 @@ public class DenseNetworkExtendedTest {
     public void testModeValidation() {
         // Create a standard network
         DenseNetwork standardNetwork = new DenseNetwork();
+        // Add at least one layer to initialize the network
+        standardNetwork.addLayer(new InputLayer(2));
         
         // Try to get tensor layers on standard network
         assertThrows(IllegalStateException.class, () -> {

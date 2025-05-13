@@ -1,8 +1,6 @@
 package deeplearningjava.core.activation;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -20,18 +18,29 @@ public class TanhTest {
         assertSame(instance1, instance2, "Tanh should use singleton pattern");
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "0.0, 0.0", // Input 0, output 0
-        "1.0, 0.7615941559", // Small positive
-        "-1.0, -0.7615941559", // Small negative
-        "2.0, 0.9640275801", // Larger positive
-        "-2.0, -0.9640275801"  // Larger negative
-    })
-    public void testApply(double input, double expected) {
+    @Test
+    public void testApply() {
         ActivationFunction tanh = Tanh.getInstance();
-        assertEquals(expected, tanh.apply(input), 0.0001, 
-                     "Tanh.apply(" + input + ") should return approximately " + expected);
+        
+        // Input 0, output 0
+        assertEquals(0.0, tanh.apply(0.0), 0.0001, 
+                     "Tanh.apply(0.0) should return approximately 0.0");
+        
+        // Small positive
+        assertEquals(0.7615941559, tanh.apply(1.0), 0.0001, 
+                     "Tanh.apply(1.0) should return approximately 0.7615941559");
+        
+        // Small negative
+        assertEquals(-0.7615941559, tanh.apply(-1.0), 0.0001, 
+                     "Tanh.apply(-1.0) should return approximately -0.7615941559");
+        
+        // Larger positive
+        assertEquals(0.9640275801, tanh.apply(2.0), 0.0001, 
+                     "Tanh.apply(2.0) should return approximately 0.9640275801");
+        
+        // Larger negative
+        assertEquals(-0.9640275801, tanh.apply(-2.0), 0.0001, 
+                     "Tanh.apply(-2.0) should return approximately -0.9640275801");
     }
     
     @Test
@@ -44,16 +53,21 @@ public class TanhTest {
         assertTrue(tanh.apply(-100.0) < -0.999, "Tanh of large negative should approach -1.0");
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "0.0, 1.0", // Derivative at 0 is 1
-        "1.0, 0.4199743416", // Derivative at 1.0
-        "-1.0, 0.4199743416"  // Derivative at -1.0
-    })
-    public void testDerivative(double input, double expected) {
+    @Test
+    public void testDerivative() {
         ActivationFunction tanh = Tanh.getInstance();
-        assertEquals(expected, tanh.derivative(input), 0.0001,
-                     "Tanh.derivative(" + input + ") should return approximately " + expected);
+        
+        // Derivative at 0 is 1
+        assertEquals(1.0, tanh.derivative(0.0), 0.0001,
+                     "Tanh.derivative(0.0) should return approximately 1.0");
+        
+        // Derivative at 1.0
+        assertEquals(0.4199743416, tanh.derivative(1.0), 0.0001,
+                     "Tanh.derivative(1.0) should return approximately 0.4199743416");
+        
+        // Derivative at -1.0
+        assertEquals(0.4199743416, tanh.derivative(-1.0), 0.0001,
+                     "Tanh.derivative(-1.0) should return approximately 0.4199743416");
     }
     
     @Test

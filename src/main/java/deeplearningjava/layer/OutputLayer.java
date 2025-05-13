@@ -1,7 +1,9 @@
 package deeplearningjava.layer;
 
 import deeplearningjava.core.Node;
+import deeplearningjava.core.Edge;
 import deeplearningjava.core.activation.ActivationFunction;
+import java.util.List;
 
 /**
  * Output layer for a neural network.
@@ -108,8 +110,43 @@ public class OutputLayer extends AbstractLayer {
         }
         
         // Calculate gradients for previous layer
-        double[] previousGradients = new double[nodes.get(0).getIncomingConnections().size()];
-        // TODO: Implement gradient propagation to previous layer
+        if (nodes.isEmpty() || nodes.get(0).getIncomingConnections().isEmpty()) {
+            return new double[0]; // No previous layer
+        }
+        
+        // Determine the size of the previous layer by checking
+        // how many unique source nodes connect to this layer
+        Node firstNode = nodes.get(0);
+        List<Edge> incomingConnections = firstNode.getIncomingConnections();
+        
+        if (incomingConnections.isEmpty()) {
+            return new double[0];
+        }
+        
+        // Assuming a fully connected network, each output node
+        // is connected to every node in the previous layer.
+        // So we can count the number of incoming connections
+        // to the first output node to get the previous layer size.
+        int previousLayerSize = incomingConnections.size();
+        double[] previousGradients = new double[previousLayerSize];
+        
+        // Map each gradient to the corresponding previous layer node
+        for (int i = 0; i < previousLayerSize; i++) {
+            // Get the source node for this connection
+            Node sourceNode = incomingConnections.get(i).getSourceNode();
+            double gradientSum = 0.0;
+            
+            // Sum gradients from all output nodes connected to this source node
+            for (Node outputNode : nodes) {
+                for (Edge edge : outputNode.getIncomingConnections()) {
+                    if (edge.getSourceNode() == sourceNode) {
+                        gradientSum += edge.getWeight() * outputNode.getGradient();
+                    }
+                }
+            }
+            
+            previousGradients[i] = gradientSum;
+        }
         
         return previousGradients;
     }
